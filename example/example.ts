@@ -1,67 +1,132 @@
 import { createServer } from 'node:http';
 import { WebSocketServer } from 'ws';
-import { Inspector } from '../lib/inspector';
-import { WebSocketController } from '../lib/websocket';
+import { MemoryStore } from '@exotjs/inspector-measurements/store';
+import { Inspector } from '../lib/inspector.js';
 
-const inspector = new Inspector({
-  measurements: [{
-    name: 'cpu',
-    sensor: 'cpu',
-  }, {
-    name: 'memory:rss',
-    sensor: 'memory-rss',
-  }, {
-    name: 'memory:heap',
-    sensor: 'memory-heap',
-  }, {
-    name: 'eld',
-    sensor: 'event-loop-delay',
-  }, {
-    name: 'responsetime',
-    type: 'number',
-  }, {
-    name: 'requests:2xx',
-    type: 'counter',
-  }, {
-    name: 'requests:3xx',
-    type: 'counter',
-  }, {
-    name: 'requests:4xx',
-    type: 'counter',
-  }, {
-    name: 'requests:5xx',
-    type: 'counter',
-  }, {
-    name: 'rpm',
-    type: 'counter',
-  }],
-});
-
+const PORT = 3001;
 
 const server = createServer();
 const wss = new WebSocketServer({
   noServer: true,
 });
 
-wss.on('connection', async (ws) => {
-  //ws.send('Hello');
-  const ctrl = inspector.createWebSocketController();
-  ctrl.on('data', (data) => {
+const inspector = new Inspector({
+  store: new MemoryStore({}),
+});
+
+inspector.activate();
+
+function getPath(url: string) {
+  const [path] = url.split('?');
+  return path;
+}
+
+async function delay(msec: number) {
+  return new Promise((resolve) => setTimeout(resolve, msec));
+}
+
+wss.on('connection', async (ws, req) => {
+  const remoteAddress = req.socket.remoteAddress;
+  const session = inspector.createSessions({
+    remoteAddress,
+  });
+  session.on('message', (data) => {
     ws.send(data);
   });
+  ws.on('close', () => {
+    session.destroy();
+  });
   ws.on('message', (message) => {
-    ctrl.handleMessage(message);
+    session.handleMessage(message);
   });
 });
 
-server.on('request', (req, res) => {
-  console.log('>> req', req.method, req.url);
-  res.end('Hi.');
+server.on('request', async (req, res) => {
+  const start = performance.now();
+  const path = getPath(req.url || '/');
+
+  res.on('close', () => {
+    inspector.instruments.measurements.trackResponse({
+      status: res.statusCode,
+      duration: performance.now() - start,
+    });
+  });
+
+  switch (path) {
+    case '/':
+      console.log({
+        headers: req.headers,
+        method: req.method,
+        url: req.url,
+      });
+      res.end('Hello');
+      break;
+
+    case '/400':
+      res.statusCode = 400;
+      res.end('400');
+      break;
+
+    case '/trace':
+      const span = inspector.instruments.traces.startSpan({
+        label: 'HTTP',
+        name: 'request',
+      });
+      await inspector.instruments.traces.trace(
+        () => {
+          return delay(250);
+        },
+        {
+          name: 'db:select',
+          parent: span,
+        },
+      );
+      await inspector.instruments.traces.trace(
+        () => {
+          return delay(150);
+        },
+        {
+          name: 'db:update',
+          parent: span,
+        },
+      );
+      res.end();
+      span.end();
+      break;
+
+    case '/error':
+      try {
+        throw new Error('Test error');
+      } catch (err) {
+        inspector.instruments.errors.push(err);
+        res.statusCode = 500;
+        res.end('error');
+      }
+      break;
+
+    case '/fetch':
+      const resp = await fetch('https://httpbin.org/anything', {
+        body: JSON.stringify({
+          hello: 'World',
+        }),
+        headers: {
+          'content-type': 'application/json',
+        },
+        method: 'POST',
+      });
+      res.end(JSON.stringify(await resp.json()));
+      break;
+
+    default:
+      res.statusCode = 404;
+      res.end();
+  }
 });
 
 server.on('upgrade', (req, socket, head) => {
-  const url = new URL(req.url || '/', 'http://localhost');
-  if (url.pathname === '/ws') {
+  const path = getPath(req.url || '/');
+
+  if (path === '/_inspector') {
     wss.handleUpgrade(req, socket, head, (ws) => {
       wss.emit('connection', ws, req);
     });
@@ -70,27 +135,6 @@ server.on('upgrade', (req, socket, head) => {
   }
 });
 
-const start = Date.now();
-inspector.start();
-
-setInterval(() => {
-  const statuses = [
-    '2xx',
-    '2xx',
-    '2xx',
-    '2xx',
-    '2xx',
-    '2xx',
-    '2xx',
-    '2xx',
-    '2xx',
-    '3xx', '4xx', '5xx'];
-  const status = statuses[Math.floor(Math.random() * statuses.length)];
-  inspector.measurements.counter('requests:' + status).push(1);
-  inspector.measurements.counter('responsetime').push(Math.round(Math.random() * 1000));
-  inspector.measurements.counter('rpm').push(Math.floor(Math.random() * 10));
-}, 1000)
-
-server.listen(3001, () => {
-  console.log('Server listening on port 3001');
+server.listen(PORT, () => {
+  console.log('Server listening on port ' + PORT);
 });

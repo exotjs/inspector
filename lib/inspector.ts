@@ -1,159 +1,93 @@
 import os from 'node:os';
 import proc from 'node:process';
-import { Measurements } from "@exotjs/inspector-measurements";
-import { CpuSensor } from "./sensors/cpu";
-import { SensorBase } from "./types";
-import { MemoryRssSensor } from './sensors/memory-rss';
-import { MemoryHeapSensor } from './sensors/memory-heap';
-import { EventLoopDelaySensor } from './sensors/event-loop-delay';
-import { Logs } from './logs';
-import { WebSocketController } from './websocket';
-
-export interface InspectorInit {
-  measurements: {
-    name: string;
-    sensor?: string;
-    type?: 'number' | 'counter' | 'value';
-  }[];
-}
-
-export interface InspectorHost {
-  arch: string;
-  cpus: number;
-  cpuModel: string;
-  hostname: string;
-  memory: number;
-  platform: string;
-}
-
-export interface InspectorRuntime {
-  name: string;
-  version: string;
-}
+import { Session } from './session.js';
+import { ErrorsInstrument } from './instruments/errors.js';
+import { LogsInstrument } from './instruments/logs.js';
+import { MeasurementsInstrument } from './instruments/measurements.js';
+import { NetworkInstrument } from './instruments/network.js';
+import { TracesInstrument } from './instruments/traces.js';
+import defaultDashboards from './default-dashboards.js';
+import type { Dashboard, InspectorInit, SessionInit } from './types.js';
+import type { Store } from '@exotjs/inspector-measurements/types';
 
 export class Inspector {
-  #sampleInterval?: NodeJS.Timeout;
-
-  host!: InspectorHost;
-
-  logs: Logs;
-
-  measurements: Measurements;
-
-  runtime!: InspectorRuntime;
-
-  sensors: SensorBase[] = [];
-
-  constructor(readonly init: InspectorInit) {
-    this.readHost();
-    this.readRuntime();
-    this.logs = new Logs({});
-    this.measurements = new Measurements({
-      measurements: this.init.measurements.map(({ name, type }) => {
-        return {
-          interval: 20000,
-          key: name,
-          type: type || 'number',
-        };
-      }),
-    });
+  static defaultDashboards(): Dashboard[] {
+    return defaultDashboards as any[];
   }
 
-  readHost() {
+  instruments: {
+    errors: ErrorsInstrument;
+    logs: LogsInstrument;
+    measurements: MeasurementsInstrument;
+    network: NetworkInstrument;
+    traces: TracesInstrument;
+  };
+
+  sessions: Set<Session> = new Set();
+
+  store: Store;
+
+  get env() {
+    return {
+      ...proc.env,
+    };
+  }
+
+  get info() {
     const cpus = os.cpus();
-    this.host = {
+    const runtime =
+      (proc.title?.match(/[^\w]/) ? proc.release.name : proc.title) || 'node';
+    return {
+      apiVersion: '0.0.0',
       arch: os.arch(),
       cpus: cpus.length,
       cpuModel: cpus[0]?.model || '',
       hostname: os.hostname(),
       memory: os.totalmem(),
       platform: os.platform(),
+      runtime,
+      runtimeVersion: proc.versions[runtime] || proc.version,
+      startedAt: performance.timeOrigin,
     };
   }
 
-  readRuntime() {
-    const name = (proc.title?.match(/[^\w]/) ? proc.release.name : proc.title) || 'node';
-    this.runtime = {
-      name,
-      version: proc.versions[name] || proc.version,
+  constructor(init: InspectorInit) {
+    const { instruments = {}, store } = init;
+    this.store = store;
+    this.instruments = {
+      errors: new ErrorsInstrument(store, instruments.errors),
+      logs: new LogsInstrument(store, instruments.logs),
+      measurements: new MeasurementsInstrument(store, instruments.measurements),
+      network: new NetworkInstrument(store, instruments.network),
+      traces: new TracesInstrument(store, instruments.traces),
     };
   }
 
-  createWebSocketController() {
-    return new WebSocketController(this);
-  }
-
-  async sample() {
-    const samples = await Promise.all(this.sensors.map((sensor) => sensor.sample()));
-    this.measurements.push(samples.reduce((acc, sample, i) => {
-      acc[this.init.measurements[i].name] = [sample];
-      return acc;
-    }, {} as Record<string, number[]>));
-  }
-
-  async start() {
-    for (let { name, sensor } of this.init.measurements) {
-      if (sensor) {
-        const cls = this.#getSensor(sensor);
-        this.sensors.push(new cls(name));
-      }
-    }
-    this.#sampleInterval = setInterval(() => {
-      this.sample();
-    }, 5000);
-    this.logs.mountStdout();
-  }
-
-  async stop() {
-    if (this.#sampleInterval) {
-      clearInterval(this.#sampleInterval);
-      this.#sampleInterval = void 0;
-    }
-    this.logs.unmountStdout();
-  }
-
-  #getSensor(type: string) {
-    switch (type) {
-      case 'cpu':
-        return CpuSensor;
-      case 'event-loop-delay':
-        return EventLoopDelaySensor;
-      case 'memory-heap':
-        return MemoryHeapSensor;
-      case 'memory-rss':
-        return MemoryRssSensor;
-      default:
-        throw new Error('Unknown sensor type.');
+  activate() {
+    for (let key in this.instruments) {
+      this.instruments[key as keyof typeof this.instruments].activate();
     }
   }
 
+  deactivate() {
+    for (let key in this.instruments) {
+      this.instruments[key as keyof typeof this.instruments].deactivate();
+    }
+  }
+
+  createSessions(init?: SessionInit) {
+    const session = new Session(this, init);
+    this.sessions.add(session);
+    session.on('destroy', () => {
+      this.sessions.delete(session);
+    });
+    return session;
+  }
+
+  getInstrument(instrument: keyof typeof this.instruments) {
+    if (!this.instruments[instrument]) {
+      throw new Error(`Unknown instrument ${instrument}.`);
+    }
+    return this.instruments[instrument];
+  }
 }
-
-/*
-const ins = new Inspector({
-  measurements: [{
-    name: 'cpu',
-    sensor: 'cpu',
-  }, {
-    name: 'mem',
-    sensor: 'memory-rss',
-  }, {
-    name: 'eld',
-    sensor: 'event-loop-delay',
-  }],
-});
-
-console.log('>', ins.host);
-console.log(ins.runtime)
-
-ins.start();
-
-setInterval(() => {
-  console.log('>', JSON.stringify(ins.measurements.export(), null, '  '));
-}, 6000);
-
-setInterval(() => {
-  var now = Date.now();
-  while (Date.now() - now < 500);
-}, 1000);
-*/

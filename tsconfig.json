@@ -1,6 +1,12 @@
 {
   "compilerOptions": {
-    "lib": ["ESNext", "DOM", "DOM.Iterable", "ES2018.AsyncIterable", "ES2018.AsyncGenerator"],
+    "lib": [
+      "ESNext",
+      "DOM",
+      "DOM.Iterable",
+      "ES2018.AsyncIterable",
+      "ES2018.AsyncGenerator",
+    ],
     "module": "ESNext",
     "target": "ESNext",
     "moduleResolution": "node",
@@ -10,12 +16,9 @@
     "skipLibCheck": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
-    "types": [
-      "node",
-      "vitest/importMeta",
-    ],
+    "types": ["node", "vitest/importMeta"],
     "outDir": "./dist",
-    "baseUrl": "."
+    "baseUrl": ".",
   },
   "exclude": ["node_modules"],
   "include": ["lib/**/*"],
