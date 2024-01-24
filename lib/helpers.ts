@@ -1,12 +1,10 @@
 import { ValidationSchema } from './types.js';
 
-const FILEPATH = import.meta.url.replace(/^file:\/\//, '');
-
 export function isBun() {
   return !!process.versions.bun;
 }
 
-export function getCallStack(): string[] {
+export function getCallStack(ignore: string[] = ['/@exotjs/inspector-core/']): string[] {
   try {
     throw new Error('');
   } catch (err: any) {
@@ -14,7 +12,7 @@ export function getCallStack(): string[] {
     return stack
       .split('\n')
       .slice(1)
-      .filter((line) => !line.includes(FILEPATH))
+      .filter((line) => ignore.every((i) => !line.includes(i)))
       .map((line: string) => line.replace(/^\s+at\s/, ''));
   }
 }

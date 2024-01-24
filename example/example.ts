@@ -11,6 +11,11 @@ const wss = new WebSocketServer({
 });
 
 const inspector = new Inspector({
+  instruments: {
+    logs: {
+      disabled: true,
+    },
+  },
   store: new MemoryStore({}),
 });
 
@@ -106,6 +111,7 @@ server.on('request', async (req, res) => {
 
     case '/fetch':
       const resp = await fetch('https://httpbin.org/anything', {
+        /*
         body: JSON.stringify({
           hello: 'World',
         }),
@@ -113,6 +119,7 @@ server.on('request', async (req, res) => {
           'content-type': 'application/json',
         },
         method: 'POST',
+        */
       });
       res.end(JSON.stringify(await resp.json()));
       break;

@@ -42,11 +42,7 @@ package-lock.json
 **/*.bun
 
 # app
-/benchmark
-/examples/jsx
-/examples/cors
-/examples/controllers
-/examples/swagger.ts
+/example/node_modules
 /.specs
 .TODO
 .http

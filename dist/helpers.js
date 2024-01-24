@@ -1,8 +1,7 @@
-const FILEPATH = import.meta.url.replace(/^file:\/\//, '');
 export function isBun() {
     return !!process.versions.bun;
 }
-export function getCallStack() {
+export function getCallStack(ignore = ['/@exotjs/inspector-core/']) {
     try {
         throw new Error('');
     }
@@ -11,7 +10,7 @@ export function getCallStack() {
         return stack
             .split('\n')
             .slice(1)
-            .filter((line) => !line.includes(FILEPATH))
+            .filter((line) => ignore.every((i) => !line.includes(i)))
             .map((line) => line.replace(/^\s+at\s/, ''));
     }
 }

@@ -161,7 +161,7 @@ export interface NetworkInstrumentInit extends BaseInstrumentInit {
   readBody?: boolean;
 }
 
-export interface InspectorInitInstruments extends BaseInstrumentInit {
+export interface InspectorInitInstruments {
   errors?: BaseInstrumentInit;
   logs?: BaseInstrumentInit;
   measurements?: MeasurementsInstrumentInit;
@@ -170,7 +170,6 @@ export interface InspectorInitInstruments extends BaseInstrumentInit {
 }
 
 export interface InspectorInit {
-  // dashboards?: InspectorDashboard[];
   instruments?: InspectorInitInstruments;
   store: Store;
 }

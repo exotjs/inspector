@@ -126,7 +126,7 @@ export interface NetworkInstrumentInit extends BaseInstrumentInit {
     maxBodySize?: number;
     readBody?: boolean;
 }
-export interface InspectorInitInstruments extends BaseInstrumentInit {
+export interface InspectorInitInstruments {
     errors?: BaseInstrumentInit;
     logs?: BaseInstrumentInit;
     measurements?: MeasurementsInstrumentInit;

@@ -1,7 +1,7 @@
 {
   "name": "@exotjs/inspector-core",
   "version": "0.0.1",
-  "description": "",
+  "description": "Exot application inspector",
   "author": "Daniel Regeci",
   "license": "MIT",
   "keywords": [

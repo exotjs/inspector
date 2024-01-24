@@ -117,7 +117,7 @@ export class Session extends EventEmitter {
             },
         }, message.data);
         const instrument = this.inspector.getInstrument(message.data.instrument);
-        if (!instrument.active && instrument.activate()) {
+        if (!instrument.active && !instrument.disabled && instrument.activate()) {
             if (message.data.permanent !== true) {
                 this.#activatedInstruments.push(instrument.name);
             }
@@ -133,7 +133,7 @@ export class Session extends EventEmitter {
             },
         }, message.data);
         const instrument = this.inspector.getInstrument(message.data.instrument);
-        if (instrument.active && (await instrument.deactivate())) {
+        if (instrument.active && instrument.deactivate()) {
             this.#activatedInstruments = this.#activatedInstruments.filter((name) => name !== instrument.name);
         }
         return {
@@ -159,9 +159,10 @@ export class Session extends EventEmitter {
         return {
             info: this.inspector.info,
             instruments: Object.keys(this.inspector.instruments).reduce((acc, name) => {
+                const instrument = this.inspector.instruments[name];
                 acc[name] = {
-                    active: this.inspector.instruments[name]
-                        .active,
+                    active: instrument.active,
+                    disabled: instrument.disabled,
                 };
                 return acc;
             }, {}),
