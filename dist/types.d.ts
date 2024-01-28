@@ -35,6 +35,7 @@ export interface TraceSpan {
     duration: number;
     label?: string;
     name: string;
+    parent?: TraceSpan;
     start: number;
     traceId?: string;
     traces?: TraceSpan[];

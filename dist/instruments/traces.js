@@ -4,21 +4,56 @@ export class TracesInstrument extends BaseInstrument {
         const { disabled = false } = init;
         super('traces', store, disabled);
     }
+    getEntryLabel(value) {
+        return value.label || '';
+    }
     getEntryTime(entry) {
         return Math.floor(entry.start);
     }
-    trace(fn, options) {
+    flattenSpan(span) {
+        if (span.end) {
+            // @ts-expect-error
+            delete span.end;
+        }
+        if (span.parent) {
+            delete span.parent;
+        }
+        if (span.traces?.length) {
+            for (let child of span.traces) {
+                this.flattenSpan(child);
+            }
+        }
+        return span;
+    }
+    serializeValue(value) {
+        return JSON.stringify(this.flattenSpan(value));
+    }
+    trace(fn, options, onSpanCreated, onSpanEnded) {
         const span = this.startSpan({
             name: fn.name,
             ...options,
         });
-        const result = fn(span);
-        if (result instanceof Promise) {
-            return result.finally(() => {
-                span.end();
-            });
+        const end = () => {
+            span.end();
+            if (onSpanEnded) {
+                onSpanEnded(span);
+            }
+        };
+        if (onSpanCreated) {
+            onSpanCreated(span);
         }
-        span.end();
+        let result = undefined;
+        try {
+            result = fn(span);
+        }
+        finally {
+            if (result instanceof Promise) {
+                return result.finally(() => {
+                    end();
+                });
+            }
+            end();
+        }
         return result;
     }
     startSpan(options) {
@@ -28,6 +63,7 @@ export class TracesInstrument extends BaseInstrument {
             duration: 0,
             label: options.label,
             name: options.name,
+            parent: options.parent,
             start: Math.floor((performance.timeOrigin + performance.now()) * 100) / 100,
             traceId: options.traceId,
             end: () => {

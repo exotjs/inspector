@@ -1,6 +1,6 @@
 {
   "name": "@exotjs/inspector-core",
-  "version": "0.0.1",
+  "version": "0.1.1",
   "description": "Exot application inspector",
   "author": "Daniel Regeci",
   "license": "MIT",
@@ -25,15 +25,22 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
     },
-    "./stores": {
-      "types": "./dist/stores.d.ts",
-      "import": "./dist/stores.js"
+    "./session": {
+      "types": "./dist/session.d.ts",
+      "import": "./dist/session.js"
+    },
+    "./store": {
+      "types": "./dist/store.d.ts",
+      "import": "./dist/store.js"
     }
   },
   "typesVersions": {
     "*": {
       "types": [
         "./dist/types"
+      ],
+      "session": [
+        "./dist/session"
       ],
       "store": [
         "./dist/store"
