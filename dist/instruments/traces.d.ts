@@ -1,6 +1,6 @@
 import { BaseInstrument } from '../base.js';
 import type { BaseInstrumentInit, TraceSpan, TraceSpanOptions } from '../types.js';
-import type { Store } from '@exotjs/inspector-measurements/types';
+import type { Store } from '@exotjs/measurements/types';
 export declare class TracesInstrument extends BaseInstrument {
     constructor(store: Store, init?: BaseInstrumentInit);
     getEntryLabel(value: TraceSpan): string;

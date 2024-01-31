@@ -2,8 +2,8 @@ import {
   MeasurementConfig,
   Store,
   StoreEntry,
-} from '@exotjs/inspector-measurements/types';
-import { Measurements } from '@exotjs/inspector-measurements';
+} from '@exotjs/measurements/types';
+import { Measurements } from '@exotjs/measurements';
 import { BaseInstrument, SensorBase } from '../base.js';
 import { MemoryRssSensor } from '../sensors/memory-rss.js';
 import { MemoryHeapSensor } from '../sensors/memory-heap.js';

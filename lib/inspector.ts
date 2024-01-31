@@ -8,7 +8,7 @@ import { NetworkInstrument } from './instruments/network.js';
 import { TracesInstrument } from './instruments/traces.js';
 import defaultDashboards from './default-dashboards.js';
 import type { Dashboard, InspectorInit, SessionInit } from './types.js';
-import type { Store } from '@exotjs/inspector-measurements/types';
+import type { Store } from '@exotjs/measurements/types';
 
 export class Inspector {
   static defaultDashboards(): Dashboard[] {

@@ -1,1 +1,1 @@
-export * from '@exotjs/inspector-measurements/store';
+export * from '@exotjs/measurements/store';

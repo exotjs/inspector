@@ -1,5 +1,5 @@
 {
-  "name": "@exotjs/inspector-core",
+  "name": "@exotjs/inspector",
   "version": "0.1.1",
   "description": "Exot application inspector",
   "author": "Daniel Regeci",
@@ -48,7 +48,7 @@
     }
   },
   "dependencies": {
-    "@exotjs/inspector-measurements": "0.0.2"
+    "@exotjs/measurements": "0.0.3"
   },
   "devDependencies": {
     "@types/node": "^20.9.0",

@@ -1,6 +1,6 @@
 import { BaseInstrument } from '../base.js';
 import type { NetworkInstrumentInit, NetworkRequest } from '../types.js';
-import type { Store } from '@exotjs/inspector-measurements/types';
+import type { Store } from '@exotjs/measurements/types';
 export declare class NetworkInstrument extends BaseInstrument {
     #private;
     constructor(store: Store, init?: NetworkInstrumentInit);

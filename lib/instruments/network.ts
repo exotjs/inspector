@@ -3,7 +3,7 @@ import https from 'node:https';
 import { BaseInstrument } from '../base.js';
 import { getCallStack, getModulesFromCallStack, isBun } from '../helpers.js';
 import type { NetworkInstrumentInit, NetworkRequest } from '../types.js';
-import type { Store } from '@exotjs/inspector-measurements/types';
+import type { Store } from '@exotjs/measurements/types';
 
 const CONTENT_TYPE_TEXT = [
   'application/json',

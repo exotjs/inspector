@@ -1,4 +1,4 @@
-import type { Store } from '@exotjs/inspector-measurements/types';
+import type { Store } from '@exotjs/measurements/types';
 
 export interface MeasurementConfig {
   interval: number;

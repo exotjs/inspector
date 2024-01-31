@@ -1,4 +1,4 @@
-import { Store, StoreEntry } from '@exotjs/inspector-measurements/types';
+import { Store, StoreEntry } from '@exotjs/measurements/types';
 import { BaseInstrument, SensorBase } from '../base.js';
 import type { Dashboard, MeasurementsInstrumentInit, Query, TrackResponse } from '../types.js';
 export declare class MeasurementsInstrument extends BaseInstrument {

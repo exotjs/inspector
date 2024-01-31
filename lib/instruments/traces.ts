@@ -4,7 +4,7 @@ import type {
   TraceSpan,
   TraceSpanOptions,
 } from '../types.js';
-import type { Store } from '@exotjs/inspector-measurements/types';
+import type { Store } from '@exotjs/measurements/types';
 
 export class TracesInstrument extends BaseInstrument {
   constructor(store: Store, init: BaseInstrumentInit = {}) {

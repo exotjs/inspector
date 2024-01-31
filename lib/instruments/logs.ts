@@ -1,5 +1,5 @@
 import { BaseInstrument } from '../base.js';
-import type { Store } from '@exotjs/inspector-measurements/types';
+import type { Store } from '@exotjs/measurements/types';
 import type { BaseInstrumentInit } from '../types.js';
 
 const originalStdoutWrite = process.stdout.write.bind(process.stdout);

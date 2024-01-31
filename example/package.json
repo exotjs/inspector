@@ -1,6 +1,8 @@
 {
   "type": "module",
   "devDependencies": {
+    "@exotjs/inspector-redis-store": "file:../../inspector-redis",
+    "ioredis": "^5.3.2",
     "ws": "8.16.0"
   }
 }

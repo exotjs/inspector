@@ -1,5 +1,5 @@
 import { EventEmitter } from 'node:events';
-import { Store, StoreQueryResult } from '@exotjs/inspector-measurements/types';
+import { Store, StoreQueryResult } from '@exotjs/measurements/types';
 import type { InspectorInstruments, Query } from './types.js';
 
 export abstract class BaseInstrument<Value = any> extends EventEmitter {
