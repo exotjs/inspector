@@ -1,10 +1,5 @@
 /// <reference types="node" />
-import type { Store } from '@exotjs/measurements/types';
-export interface MeasurementConfig {
-    interval: number;
-    key: string;
-    type: 'counter' | 'number' | 'value';
-}
+import type { Store, MeasurementConfig } from '@exotjs/measurements/types';
 export interface MeasurementsInit {
     measurements: MeasurementConfig[];
 }
@@ -109,7 +104,7 @@ export interface Dashboard {
         interval?: number;
         key: string;
         sensor?: string;
-        type?: 'number' | 'counter' | 'value';
+        type?: MeasurementConfig['type'];
     }[];
     name: string;
     panels: DashboardPanel[];

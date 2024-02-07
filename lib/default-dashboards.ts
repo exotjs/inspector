@@ -1,3 +1,5 @@
+import type { Dashboard } from './types.js';
+
 export default [
   {
     templateId: 'monitoring',
@@ -26,27 +28,27 @@ export default [
       },
       {
         key: 'response:1xx',
-        type: 'counter',
+        type: 'sum',
       },
       {
         key: 'response:2xx',
-        type: 'counter',
+        type: 'sum',
       },
       {
         key: 'response:3xx',
-        type: 'counter',
+        type: 'sum',
       },
       {
         key: 'response:4xx',
-        type: 'counter',
+        type: 'sum',
       },
       {
         key: 'response:5xx',
-        type: 'counter',
+        type: 'sum',
       },
       {
         key: 'response:latency',
-        type: 'number',
+        type: 'aggregate',
       },
     ],
     panels: [
@@ -130,4 +132,4 @@ export default [
       },
     ],
   },
-];
+] satisfies Dashboard[];

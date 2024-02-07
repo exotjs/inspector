@@ -13,7 +13,7 @@ export class BaseInstrument extends EventEmitter {
     }
     bindStore() {
         this.on('push', (time, label, value) => {
-            this.store.set(this.name, [time, label, value]);
+            this.store.setAdd(this.name, time, value, label);
         });
     }
     getEntryLabel(value) {
@@ -41,7 +41,7 @@ export class BaseInstrument extends EventEmitter {
         }
     }
     async query(store, query) {
-        return store.query(this.name, query.startTime, query.endTime, query.limit);
+        return store.setQuery(this.name, query.startTime, query.endTime, query.limit);
     }
     subscribe(fn, options) {
         this.on('push', fn);

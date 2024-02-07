@@ -31,16 +31,20 @@ export class MeasurementsInstrument extends BaseInstrument {
     this.#measurements = new Measurements(
       {
         measurements: this.#getMeasurementsFromDashboards(this.dashboards),
+        store,
       },
-      store,
     );
   }
 
   trackResponse(response: TrackResponse) {
     const status = String(response.status).slice(0, 1) + 'xx';
     this.#measurements.push({
-      'response:latency': [response.duration],
-      [`response:${status}`]: [1],
+      'response:latency': [{
+        values: [response.duration],
+      }],
+      [`response:${status}`]: [{
+        values: [1],
+      }],
     });
   }
 
@@ -51,7 +55,9 @@ export class MeasurementsInstrument extends BaseInstrument {
         const sensor = new cls(key, config.interval);
         sensor.on('sample', (value) => {
           this.#measurements.push({
-            [key]: value,
+            [key]: [{
+              values: [value],
+            }],
           });
         });
         this.sensors.push(sensor);
@@ -118,7 +124,7 @@ export class MeasurementsInstrument extends BaseInstrument {
           acc.push({
             interval: measurement.interval || 10000,
             key: measurement.key,
-            type: measurement.type || 'number',
+            type: measurement.type || 'aggregate',
             sensor: measurement.sensor,
           });
         }

@@ -19,7 +19,7 @@ export abstract class BaseInstrument<Value = any> extends EventEmitter {
 
   bindStore() {
     this.on('push', (time: number, label: string, value: any) => {
-      this.store.set(this.name, [time, label, value]);
+      this.store.setAdd(this.name, time, value, label);
     });
   }
 
@@ -58,7 +58,7 @@ export abstract class BaseInstrument<Value = any> extends EventEmitter {
   }
 
   async query(store: Store, query: Query): Promise<StoreQueryResult> {
-    return store.query(this.name, query.startTime, query.endTime, query.limit);
+    return store.setQuery(this.name, query.startTime, query.endTime, query.limit);
   }
 
   subscribe(

@@ -1,8 +1,8 @@
 import { createServer } from 'node:http';
 import { WebSocketServer } from 'ws';
 import { Redis } from 'ioredis';
-import { MemoryStore } from '@exotjs/inspector-measurements/store';
-import { RedisStore } from '@exotjs/inspector-redis-store';
+import { MemoryStore } from '@exotjs/measurements/store';
+import { RedisStore } from '@exotjs/redis-store';
 import { Inspector } from '../lib/inspector.js';
 
 const PORT = 3001;
@@ -18,9 +18,13 @@ const inspector = new Inspector({
       disabled: true,
     },
   },
-  // store: new MemoryStore({}),
+  //store: new MemoryStore({}),
   store: new RedisStore({
-    redis: new Redis(),
+    redis: new Redis({
+      password: 'r8bvvlqzHmlFqVU9fHGWcgWdZHBTQqzc',
+      host: 'redis-12684.c323.us-east-1-2.ec2.cloud.redislabs.com',
+      port: 12684
+    }),
   }),
 });
 

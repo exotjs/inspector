@@ -9,7 +9,12 @@ declare const _default: {
         type?: undefined;
     } | {
         key: string;
-        type: string;
+        type: "sum";
+        interval?: undefined;
+        sensor?: undefined;
+    } | {
+        key: string;
+        type: "aggregate";
         interval?: undefined;
         sensor?: undefined;
     })[];
