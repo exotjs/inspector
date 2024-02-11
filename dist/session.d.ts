@@ -18,5 +18,6 @@ export declare class Session extends EventEmitter {
     };
     destroy(): void;
     unsubscribeAll(): void;
+    hasSubscription(subscriptionId: number): boolean;
     handleMessage(message: string | ArrayBuffer | ArrayBuffer[] | Uint8Array): Promise<void>;
 }

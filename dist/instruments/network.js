@@ -29,6 +29,12 @@ export class NetworkInstrument extends BaseInstrument {
             this.interceptHttp();
         }
     }
+    async putToStore(time, label, value) {
+        return this.store.listAdd(this.name, time, label, value);
+    }
+    async queryFromStore(query) {
+        return this.store.listQuery(this.name, query.startTime, query.endTime, query.limit);
+    }
     getEntryLabel(value) {
         return value.request.method;
     }

@@ -1,15 +1,15 @@
 import { Store, StoreEntry } from '@exotjs/measurements/types';
 import { BaseInstrument, SensorBase } from '../base.js';
-import type { Dashboard, MeasurementsInstrumentInit, Query, TrackResponse } from '../types.js';
-export declare class MeasurementsInstrument extends BaseInstrument {
+import type { Dashboard, MetricsInstrumentInit, Query, TrackResponse } from '../types.js';
+export declare class MetricsInstrument extends BaseInstrument {
     #private;
     dashboards: Dashboard[];
     sensors: SensorBase[];
-    constructor(store: Store, init?: MeasurementsInstrumentInit);
+    constructor(store: Store, init?: MetricsInstrumentInit);
     trackResponse(response: TrackResponse): void;
     activate(): boolean;
     deactivate(): boolean;
-    query(store: Store, query: Query & {
+    query(query: Query & {
         keys: string[];
     }): Promise<{
         entries: StoreEntry[];

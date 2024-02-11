@@ -2,7 +2,7 @@ import http from 'node:http';
 import https from 'node:https';
 import { BaseInstrument } from '../base.js';
 import { getCallStack, getModulesFromCallStack, isBun } from '../helpers.js';
-import type { NetworkInstrumentInit, NetworkRequest } from '../types.js';
+import type { NetworkInstrumentInit, NetworkRequest, Query } from '../types.js';
 import type { Store } from '@exotjs/measurements/types';
 
 const CONTENT_TYPE_TEXT = [
@@ -44,6 +44,19 @@ export class NetworkInstrument extends BaseInstrument {
     }
   }
 
+  async putToStore(time: number, label: string, value: any) {
+    return this.store.listAdd(this.name, time, label, value);
+  }
+
+  async queryFromStore(query: Query) {
+    return this.store.listQuery(
+      this.name,
+      query.startTime,
+      query.endTime,
+      query.limit
+    );
+  }
+
   getEntryLabel(value: NetworkRequest): string {
     return value.request.method;
   }
@@ -69,14 +82,14 @@ export class NetworkInstrument extends BaseInstrument {
       request.request.bodySize = request.request.body.length;
       request.request.body = this.#flattenBody(
         request.request.body,
-        request.request.headers['content-type'],
+        request.request.headers['content-type']
       );
     }
     if (request.response.body) {
       request.response.bodySize = request.response.body.length;
       request.response.body = this.#flattenBody(
         request.response.body,
-        request.response.headers['content-type'],
+        request.response.headers['content-type']
       );
     }
     return super.push(request);
@@ -84,7 +97,7 @@ export class NetworkInstrument extends BaseInstrument {
 
   async #readHttpRequestBody(
     req: http.ClientRequest,
-    target: NetworkRequest['request'],
+    target: NetworkRequest['request']
   ) {
     const onChunk = (chunk: string | Buffer) => {
       if (Buffer.isBuffer(chunk)) {
@@ -119,7 +132,7 @@ export class NetworkInstrument extends BaseInstrument {
 
   async #readHttpResponseBody(
     resp: http.IncomingMessage,
-    target: NetworkRequest['response'],
+    target: NetworkRequest['response']
   ) {
     return new Promise((resolve) => {
       let buf = Buffer.from('');
@@ -139,7 +152,7 @@ export class NetworkInstrument extends BaseInstrument {
   #flattenBody(
     body: string | Buffer,
     contentType: string | string[] = '',
-    maxBodySize: number = this.#maxBodySize,
+    maxBodySize: number = this.#maxBodySize
   ) {
     const isText = this.#isTextContentType(String(contentType));
     if (isText) {
@@ -172,7 +185,7 @@ export class NetworkInstrument extends BaseInstrument {
     const self = this;
     return async function fetchInterceptor(
       input: RequestInfo | URL,
-      init?: RequestInit,
+      init?: RequestInit
     ) {
       if (!self.active) {
         return fetchFn(input, init);
@@ -236,7 +249,7 @@ export class NetworkInstrument extends BaseInstrument {
     const self = this;
     const createInterceptor = (
       makeRequest: typeof http.request,
-      initiator: string,
+      initiator: string
     ) => {
       return function httpInterceptor(...args: any) {
         if (!self.active) {

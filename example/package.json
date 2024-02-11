@@ -1,8 +1,6 @@
 {
   "type": "module",
   "devDependencies": {
-    "@exotjs/redis-store": "0.1.2",
-    "ioredis": "5.3.2",
     "ws": "8.16.0"
   }
 }

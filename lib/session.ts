@@ -25,7 +25,7 @@ export class Session extends EventEmitter {
 
   constructor(
     readonly inspector: Inspector,
-    init: SessionInit = {},
+    init: SessionInit = {}
   ) {
     super();
     this.remoteAddress = init.remoteAddress || '';
@@ -66,8 +66,12 @@ export class Session extends EventEmitter {
     this.#subscriptions.clear();
   }
 
+  hasSubscription(subscriptionId: number) {
+    return this.#subscriptions.has(subscriptionId);
+  }
+
   async handleMessage(
-    message: string | ArrayBuffer | ArrayBuffer[] | Uint8Array,
+    message: string | ArrayBuffer | ArrayBuffer[] | Uint8Array
   ) {
     let json;
     try {
@@ -104,7 +108,7 @@ export class Session extends EventEmitter {
           type: 'string',
         },
       },
-      message,
+      message
     );
     switch (message.type) {
       case 'activate':
@@ -139,13 +143,13 @@ export class Session extends EventEmitter {
           type: 'boolean',
         },
       },
-      message.data,
+      message.data
     );
     const instrument = this.inspector.getInstrument(message.data.instrument);
     if (!instrument.active && !instrument.disabled && instrument.activate()) {
       if (message.data.permanent !== true) {
         this.#activatedInstruments.push(
-          instrument.name as keyof Inspector['instruments'],
+          instrument.name as keyof Inspector['instruments']
         );
       }
     }
@@ -161,12 +165,12 @@ export class Session extends EventEmitter {
           type: 'string',
         },
       },
-      message.data,
+      message.data
     );
     const instrument = this.inspector.getInstrument(message.data.instrument);
     if (instrument.active && instrument.deactivate()) {
       this.#activatedInstruments = this.#activatedInstruments.filter(
-        (name) => name !== instrument.name,
+        (name) => name !== instrument.name
       );
     }
     return {
@@ -181,7 +185,7 @@ export class Session extends EventEmitter {
   }
 
   async #onDashboards(message: WebSocketMessage) {
-    return this.inspector.instruments.measurements.dashboards.map(
+    return this.inspector.instruments.metrics.dashboards.map(
       ({ name, panels, templateId, templateVersion }) => {
         return {
           name,
@@ -189,7 +193,7 @@ export class Session extends EventEmitter {
           templateId,
           templateVersion,
         };
-      },
+      }
     );
   }
 
@@ -198,14 +202,15 @@ export class Session extends EventEmitter {
       info: this.inspector.info,
       instruments: Object.keys(this.inspector.instruments).reduce(
         (acc, name) => {
-          const instrument = this.inspector.instruments[name as keyof Inspector['instruments']];
+          const instrument =
+            this.inspector.instruments[name as keyof Inspector['instruments']];
           acc[name] = {
             active: instrument.active,
             disabled: instrument.disabled,
           };
           return acc;
         },
-        {} as Record<string, { active: boolean, disabled: boolean }>,
+        {} as Record<string, { active: boolean; disabled: boolean }>
       ),
       sessionId: this.id,
       sessions: [...this.inspector.sessions.values()].map((session) => {
@@ -242,14 +247,14 @@ export class Session extends EventEmitter {
           type: 'object',
         },
       },
-      message.data,
+      message.data
     );
     const data = message.data;
     const instrument = this.inspector.getInstrument(data.instrument);
     if (instrument.disabled) {
       throw new DisabledInstrumentError();
     }
-    return instrument.query(this.inspector.store, data.options.query);
+    return instrument.query(data.options.query);
   }
 
   async #onSubscribe(message: WebSocketMessage) {
@@ -262,7 +267,7 @@ export class Session extends EventEmitter {
           type: 'object',
         },
       },
-      message.data,
+      message.data
     );
     const data = message.data;
     const subscriptionId = (this.#subscriptionId = this.#subscriptionId + 1);

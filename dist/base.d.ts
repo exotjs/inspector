@@ -8,15 +8,16 @@ export declare abstract class BaseInstrument<Value = any> extends EventEmitter {
     active: boolean;
     disabled: boolean;
     constructor(name: InspectorInstruments, store: Store, disabled?: boolean);
-    bindStore(): void;
     getEntryLabel(value: Value): string;
     getEntryTime(value: Value): number;
     serializeValue(value: Value): any;
     activate(): boolean;
     deactivate(): boolean;
     push(value: Value, label?: string, time?: number): Promise<void>;
-    query(store: Store, query: Query): Promise<StoreQueryResult>;
-    subscribe(fn: (time: number, label: string, value: any) => void, options?: any): () => void;
+    query(query: Query): Promise<StoreQueryResult>;
+    putToStore(time: number, label: string, value: any): Promise<void>;
+    queryFromStore(query: Query): Promise<StoreQueryResult>;
+    subscribe(fn: (time: number, label: string, value: any) => void, options?: unknown): () => void;
 }
 export declare abstract class SensorBase extends EventEmitter {
     #private;

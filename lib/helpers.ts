@@ -4,7 +4,9 @@ export function isBun() {
   return !!process.versions.bun;
 }
 
-export function getCallStack(ignore: string[] = ['/@exotjs/inspector-core/']): string[] {
+export function getCallStack(
+  ignore: string[] = ['/@exotjs/inspector-core/']
+): string[] {
   try {
     throw new Error('');
   } catch (err: any) {

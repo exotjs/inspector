@@ -12,39 +12,41 @@ import { CpuSensor } from '../sensors/cpu.js';
 import { Inspector } from '../inspector.js';
 import type {
   Dashboard,
-  MeasurementsInstrumentInit,
+  MetricsInstrumentInit,
   Query,
   TrackResponse,
 } from '../types.js';
 
-export class MeasurementsInstrument extends BaseInstrument {
+export class MetricsInstrument extends BaseInstrument {
   #measurements: Measurements;
 
   dashboards: Dashboard[];
 
   sensors: SensorBase[] = [];
 
-  constructor(store: Store, init: MeasurementsInstrumentInit = {}) {
+  constructor(store: Store, init: MetricsInstrumentInit = {}) {
     const { dashboards = [], disabled = false } = init;
-    super('measurements', store, disabled);
+    super('metrics', store, disabled);
     this.dashboards = [...Inspector.defaultDashboards(), ...dashboards];
-    this.#measurements = new Measurements(
-      {
-        measurements: this.#getMeasurementsFromDashboards(this.dashboards),
-        store,
-      },
-    );
+    this.#measurements = new Measurements({
+      measurements: this.#getMeasurementsFromDashboards(this.dashboards),
+      store,
+    });
   }
 
   trackResponse(response: TrackResponse) {
     const status = String(response.status).slice(0, 1) + 'xx';
     this.#measurements.push({
-      'response:latency': [{
-        values: [response.duration],
-      }],
-      [`response:${status}`]: [{
-        values: [1],
-      }],
+      'response:latency': [
+        {
+          values: [response.duration],
+        },
+      ],
+      [`response:${status}`]: [
+        {
+          values: [1],
+        },
+      ],
     });
   }
 
@@ -55,9 +57,11 @@ export class MeasurementsInstrument extends BaseInstrument {
         const sensor = new cls(key, config.interval);
         sensor.on('sample', (value) => {
           this.#measurements.push({
-            [key]: [{
-              values: [value],
-            }],
+            [key]: [
+              {
+                values: [value],
+              },
+            ],
           });
         });
         this.sensors.push(sensor);
@@ -74,13 +78,13 @@ export class MeasurementsInstrument extends BaseInstrument {
     return super.deactivate();
   }
 
-  async query(store: Store, query: Query & { keys: string[] }) {
+  async query(query: Query & { keys: string[] }) {
     const result = await this.#measurements.export({
       ...query,
     });
     return {
       entries: result.map(
-        (item) => [Date.now(), '', JSON.stringify(item)] as StoreEntry,
+        (item) => [Date.now(), '', JSON.stringify(item)] as StoreEntry
       ),
       hasMore: false,
     };
@@ -88,10 +92,16 @@ export class MeasurementsInstrument extends BaseInstrument {
 
   subscribe(
     fn: (time: number, label: string, value: any) => void,
-    options: { interval?: number; keys?: string[]; startTime?: number },
+    options: { interval?: number; keys?: string[]; startTime?: number }
   ): () => void {
     let time = options.startTime || Date.now();
+    let subscribed = true;
+    let running = false;
     const tick = () => {
+      if (running) {
+        return;
+      }
+      running = true;
       const now = Date.now();
       this.#measurements
         .export({
@@ -99,18 +109,22 @@ export class MeasurementsInstrument extends BaseInstrument {
           startTime: time,
         })
         .then((result) => {
-          fn(time, '', JSON.stringify(result));
+          if (subscribed) {
+            fn(time, '', JSON.stringify(result));
+          }
         })
         .catch(() => {
           // TODO:
         })
         .finally(() => {
           time = now;
+          running = false;
         });
     };
     const interval = setInterval(tick, options.interval || 5000);
     tick();
     return () => {
+      subscribed = false;
       if (interval) {
         clearInterval(interval);
       }

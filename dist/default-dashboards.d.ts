@@ -26,7 +26,7 @@ declare const _default: {
             'response:3xx': string;
             'response:4xx': string;
             'response:5xx': string;
-            responsetime?: undefined;
+            'response:latency'?: undefined;
             cpu?: undefined;
             'memory:heap'?: undefined;
             'memory:rss'?: undefined;
@@ -49,7 +49,7 @@ declare const _default: {
     } | {
         colspan: number;
         legend: {
-            responsetime: string;
+            'response:latency': string;
             'response:1xx'?: undefined;
             'response:2xx'?: undefined;
             'response:3xx'?: undefined;
@@ -77,7 +77,7 @@ declare const _default: {
             'response:3xx'?: undefined;
             'response:4xx'?: undefined;
             'response:5xx'?: undefined;
-            responsetime?: undefined;
+            'response:latency'?: undefined;
             'memory:heap'?: undefined;
             'memory:rss'?: undefined;
             eventloop?: undefined;
@@ -100,7 +100,7 @@ declare const _default: {
             'response:3xx'?: undefined;
             'response:4xx'?: undefined;
             'response:5xx'?: undefined;
-            responsetime?: undefined;
+            'response:latency'?: undefined;
             cpu?: undefined;
             eventloop?: undefined;
         };
@@ -121,7 +121,7 @@ declare const _default: {
             'response:3xx'?: undefined;
             'response:4xx'?: undefined;
             'response:5xx'?: undefined;
-            responsetime?: undefined;
+            'response:latency'?: undefined;
             cpu?: undefined;
             'memory:heap'?: undefined;
             'memory:rss'?: undefined;

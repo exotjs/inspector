@@ -5,6 +5,12 @@ export class ErrorsInstrument extends BaseInstrument {
         const { disabled = false } = init;
         super('errors', store, disabled);
     }
+    async putToStore(time, label, value) {
+        return this.store.listAdd(this.name, time, label, value);
+    }
+    async queryFromStore(query) {
+        return this.store.listQuery(this.name, query.startTime, query.endTime, query.limit);
+    }
     getEntryLabel(value) {
         return value.server === false ? 'client' : 'server';
     }

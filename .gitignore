@@ -43,6 +43,7 @@ package-lock.json
 
 # app
 /example/node_modules
+/example/redis
 /.specs
 .TODO
 .http

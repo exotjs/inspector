@@ -50,6 +50,9 @@ export class Session extends EventEmitter {
         }
         this.#subscriptions.clear();
     }
+    hasSubscription(subscriptionId) {
+        return this.#subscriptions.has(subscriptionId);
+    }
     async handleMessage(message) {
         let json;
         try {
@@ -146,7 +149,7 @@ export class Session extends EventEmitter {
         };
     }
     async #onDashboards(message) {
-        return this.inspector.instruments.measurements.dashboards.map(({ name, panels, templateId, templateVersion }) => {
+        return this.inspector.instruments.metrics.dashboards.map(({ name, panels, templateId, templateVersion }) => {
             return {
                 name,
                 panels,
@@ -204,7 +207,7 @@ export class Session extends EventEmitter {
         if (instrument.disabled) {
             throw new DisabledInstrumentError();
         }
-        return instrument.query(this.inspector.store, data.options.query);
+        return instrument.query(data.options.query);
     }
     async #onSubscribe(message) {
         validate({

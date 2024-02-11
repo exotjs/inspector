@@ -1,6 +1,6 @@
 import { BaseInstrument } from '../base.js';
 import type { Store } from '@exotjs/measurements/types';
-import type { BaseInstrumentInit } from '../types.js';
+import type { BaseInstrumentInit, Query } from '../types.js';
 
 const originalStdoutWrite = process.stdout.write.bind(process.stdout);
 
@@ -8,6 +8,19 @@ export class LogsInstrument extends BaseInstrument {
   constructor(store: Store, init: BaseInstrumentInit = {}) {
     const { disabled = false } = init;
     super('logs', store, disabled);
+  }
+
+  async putToStore(time: number, label: string, value: any) {
+    return this.store.listAdd(this.name, time, label, value);
+  }
+
+  async queryFromStore(query: Query) {
+    return this.store.listQuery(
+      this.name,
+      query.startTime,
+      query.endTime,
+      query.limit
+    );
   }
 
   activate() {
@@ -37,7 +50,7 @@ export class LogsInstrument extends BaseInstrument {
   stripAnsi(str: string) {
     return str.replace(
       /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g,
-      '',
+      ''
     );
   }
 }

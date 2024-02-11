@@ -7,22 +7,22 @@ export default [
     name: 'Monitoring',
     measurements: [
       {
-        interval: 5000,
+        interval: 10000,
         key: 'cpu',
         sensor: 'cpu',
       },
       {
-        interval: 5000,
+        interval: 10000,
         key: 'memory:rss',
         sensor: 'memory-rss',
       },
       {
-        interval: 5000,
+        interval: 10000,
         key: 'memory:heap',
         sensor: 'memory-heap',
       },
       {
-        interval: 5000,
+        interval: 10000,
         key: 'eventloop',
         sensor: 'event-loop-delay',
       },
@@ -83,7 +83,7 @@ export default [
       {
         colspan: 6,
         legend: {
-          responsetime: 'Response time',
+          'response:latency': 'Latency',
         },
         title: 'Response time',
         measurements: ['response:latency.avg'],
@@ -95,7 +95,7 @@ export default [
       {
         colspan: 4,
         legend: {
-          cpu: 'CPU usage',
+          cpu: 'CPU',
         },
         title: 'CPU',
         measurements: ['cpu.avg'],

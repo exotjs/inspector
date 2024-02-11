@@ -5,13 +5,13 @@ import { MemoryHeapSensor } from '../sensors/memory-heap.js';
 import { EventLoopDelaySensor } from '../sensors/event-loop-delay.js';
 import { CpuSensor } from '../sensors/cpu.js';
 import { Inspector } from '../inspector.js';
-export class MeasurementsInstrument extends BaseInstrument {
+export class MetricsInstrument extends BaseInstrument {
     #measurements;
     dashboards;
     sensors = [];
     constructor(store, init = {}) {
         const { dashboards = [], disabled = false } = init;
-        super('measurements', store, disabled);
+        super('metrics', store, disabled);
         this.dashboards = [...Inspector.defaultDashboards(), ...dashboards];
         this.#measurements = new Measurements({
             measurements: this.#getMeasurementsFromDashboards(this.dashboards),
@@ -21,12 +21,16 @@ export class MeasurementsInstrument extends BaseInstrument {
     trackResponse(response) {
         const status = String(response.status).slice(0, 1) + 'xx';
         this.#measurements.push({
-            'response:latency': [{
+            'response:latency': [
+                {
                     values: [response.duration],
-                }],
-            [`response:${status}`]: [{
+                },
+            ],
+            [`response:${status}`]: [
+                {
                     values: [1],
-                }],
+                },
+            ],
         });
     }
     activate() {
@@ -36,9 +40,11 @@ export class MeasurementsInstrument extends BaseInstrument {
                 const sensor = new cls(key, config.interval);
                 sensor.on('sample', (value) => {
                     this.#measurements.push({
-                        [key]: [{
+                        [key]: [
+                            {
                                 values: [value],
-                            }],
+                            },
+                        ],
                     });
                 });
                 this.sensors.push(sensor);
@@ -53,7 +59,7 @@ export class MeasurementsInstrument extends BaseInstrument {
         this.sensors = [];
         return super.deactivate();
     }
-    async query(store, query) {
+    async query(query) {
         const result = await this.#measurements.export({
             ...query,
         });
@@ -64,7 +70,13 @@ export class MeasurementsInstrument extends BaseInstrument {
     }
     subscribe(fn, options) {
         let time = options.startTime || Date.now();
+        let subscribed = true;
+        let running = false;
         const tick = () => {
+            if (running) {
+                return;
+            }
+            running = true;
             const now = Date.now();
             this.#measurements
                 .export({
@@ -72,18 +84,22 @@ export class MeasurementsInstrument extends BaseInstrument {
                 startTime: time,
             })
                 .then((result) => {
-                fn(time, '', JSON.stringify(result));
+                if (subscribed) {
+                    fn(time, '', JSON.stringify(result));
+                }
             })
                 .catch(() => {
                 // TODO:
             })
                 .finally(() => {
                 time = now;
+                running = false;
             });
         };
         const interval = setInterval(tick, options.interval || 5000);
         tick();
         return () => {
+            subscribed = false;
             if (interval) {
                 clearInterval(interval);
             }

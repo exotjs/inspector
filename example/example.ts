@@ -1,8 +1,6 @@
 import { createServer } from 'node:http';
 import { WebSocketServer } from 'ws';
-import { Redis } from 'ioredis';
-import { MemoryStore } from '@exotjs/measurements/store';
-import { RedisStore } from '@exotjs/redis-store';
+import { MemoryStore } from '../lib/store.js';
 import { Inspector } from '../lib/inspector.js';
 
 const PORT = 3001;
@@ -15,17 +13,10 @@ const wss = new WebSocketServer({
 const inspector = new Inspector({
   instruments: {
     logs: {
-      disabled: true,
+      // disabled: true,
     },
   },
-  //store: new MemoryStore({}),
-  store: new RedisStore({
-    redis: new Redis({
-      password: 'r8bvvlqzHmlFqVU9fHGWcgWdZHBTQqzc',
-      host: 'redis-12684.c323.us-east-1-2.ec2.cloud.redislabs.com',
-      port: 12684
-    }),
-  }),
+  store: new MemoryStore(),
 });
 
 inspector.activate();
@@ -82,30 +73,25 @@ server.on('request', async (req, res) => {
       break;
 
     case '/trace':
-      const span = inspector.instruments.traces.startSpan({
-        label: 'HTTP',
-        name: 'request',
-      });
-      await inspector.instruments.traces.trace(
+      const span = inspector.instruments.traces.startSpan('request');
+      await inspector.instruments.traces.trace('db:select',
         () => {
           return delay(250);
         },
         {
-          name: 'db:select',
           parent: span,
         },
       );
-      await inspector.instruments.traces.trace(
+      await inspector.instruments.traces.trace('db:update', 
         () => {
           return delay(150);
         },
         {
-          name: 'db:update',
           parent: span,
         },
       );
       res.end();
-      span.end();
+      inspector.instruments.traces.endSpan(span);
       break;
 
     case '/error':

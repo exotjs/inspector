@@ -1,113 +1,57 @@
 import { BaseInstrument } from '../base.js';
-import type {
-  BaseInstrumentInit,
-  TraceSpan,
-  TraceSpanOptions,
-} from '../types.js';
+import { Tracer } from '@exotjs/trace';
+import type { BaseInstrumentInit, Query } from '../types.js';
 import type { Store } from '@exotjs/measurements/types';
+import { TraceSpan } from '@exotjs/trace/types';
 
 export class TracesInstrument extends BaseInstrument {
+  readonly tracer: Tracer;
+
   constructor(store: Store, init: BaseInstrumentInit = {}) {
     const { disabled = false } = init;
     super('traces', store, disabled);
+    this.tracer = new Tracer();
+    this.tracer.on('endSpan', (span) => {
+      if (!span.parent) {
+        this.push(span);
+      }
+    });
+  }
+
+  get endSpan() {
+    return this.tracer.endSpan;
+  }
+
+  get startSpan() {
+    return this.tracer.startSpan;
+  }
+
+  get trace() {
+    return this.tracer.trace;
+  }
+
+  async putToStore(time: number, label: string, value: any) {
+    return this.store.listAdd(this.name, time, label, value);
+  }
+
+  async queryFromStore(query: Query) {
+    return this.store.listQuery(
+      this.name,
+      query.startTime,
+      query.endTime,
+      query.limit
+    );
   }
 
   getEntryLabel(value: TraceSpan): string {
-    return value.label || '';
+    return String(value.attributes?.label || '');
   }
 
   getEntryTime(entry: TraceSpan) {
     return Math.floor(entry.start);
   }
 
-  flattenSpan(span: TraceSpan): Omit<TraceSpan, 'end' | 'parent'> {
-    if (span.end) {
-      // @ts-expect-error
-      delete span.end;
-    }
-    if (span.parent) {
-      delete span.parent;
-    }
-    if (span.traces?.length) {
-      for (let child of span.traces) {
-        this.flattenSpan(child);
-      }
-    }
-    return span;
-  }
-
   serializeValue(value: TraceSpan): string {
-    return JSON.stringify(this.flattenSpan(value));
-  }
-
-  trace<T>(
-    fn: (span: TraceSpan) => T,
-    options?: TraceSpanOptions,
-    onSpanCreated?: (span: TraceSpan) => void,
-    onSpanEnded?: (span: TraceSpan) => void,
-  ): Promise<T> | T {
-    const span = this.startSpan({
-      name: fn.name,
-      ...options,
-    });
-    const end = () => {
-      span.end();
-      if (onSpanEnded) {
-        onSpanEnded(span);
-      }
-    };
-    if (onSpanCreated) {
-      onSpanCreated(span);
-    }
-    let result: T | undefined = undefined;
-    try {
-      result = fn(span);
-    } finally {
-      if (result instanceof Promise) {
-        return result.finally(() => {
-          end();
-        });
-      }
-      end();
-    }
-    return result;
-  }
-
-  startSpan(options: TraceSpanOptions): TraceSpan {
-    const span: TraceSpan = {
-      attributes: options.attributes,
-      description: options.description,
-      duration: 0,
-      label: options.label,
-      name: options.name,
-      parent: options.parent,
-      start:
-        Math.floor((performance.timeOrigin + performance.now()) * 100) / 100,
-      traceId: options.traceId,
-      end: () => {
-        if (!span.duration) {
-          span.duration =
-            Math.floor(
-              (performance.timeOrigin + performance.now() - span.start) * 100,
-            ) / 100;
-          if (span.traces?.length) {
-            for (let sub of span.traces) {
-              sub.end();
-            }
-          }
-          if (!options.parent) {
-            this.push(span);
-          }
-        }
-        return span;
-      },
-    };
-    if (options.parent) {
-      if (!options.parent.traces) {
-        options.parent.traces = [];
-      }
-      options.parent.traces.push(span as TraceSpan);
-    }
-    return span;
+    return JSON.stringify(value);
   }
 }

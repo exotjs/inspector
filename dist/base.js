@@ -9,12 +9,9 @@ export class BaseInstrument extends EventEmitter {
         this.name = name;
         this.store = store;
         this.disabled = disabled;
-        this.bindStore();
-    }
-    bindStore() {
-        this.on('push', (time, label, value) => {
-            this.store.setAdd(this.name, time, value, label);
-        });
+        if (!this.disabled) {
+            this.active = true;
+        }
     }
     getEntryLabel(value) {
         return '';
@@ -37,11 +34,19 @@ export class BaseInstrument extends EventEmitter {
     }
     async push(value, label = this.getEntryLabel(value), time = this.getEntryTime(value)) {
         if (this.active) {
-            this.emit('push', time, label, this.serializeValue(value));
+            const serialized = this.serializeValue(value);
+            await this.putToStore(time, label, serialized);
+            this.emit('push', time, label, serialized);
         }
     }
-    async query(store, query) {
-        return store.setQuery(this.name, query.startTime, query.endTime, query.limit);
+    async query(query) {
+        return this.queryFromStore(query);
+    }
+    async putToStore(time, label, value) {
+        return this.store.setAdd(this.name, time, label, value);
+    }
+    async queryFromStore(query) {
+        return this.store.setQuery(this.name, query.startTime, query.endTime, query.limit);
     }
     subscribe(fn, options) {
         this.on('push', fn);

@@ -2,7 +2,7 @@
 import { Session } from './session.js';
 import { ErrorsInstrument } from './instruments/errors.js';
 import { LogsInstrument } from './instruments/logs.js';
-import { MeasurementsInstrument } from './instruments/measurements.js';
+import { MetricsInstrument } from './instruments/metrics.js';
 import { NetworkInstrument } from './instruments/network.js';
 import { TracesInstrument } from './instruments/traces.js';
 import type { Dashboard, InspectorInit, SessionInit } from './types.js';
@@ -12,7 +12,7 @@ export declare class Inspector {
     instruments: {
         errors: ErrorsInstrument;
         logs: LogsInstrument;
-        measurements: MeasurementsInstrument;
+        metrics: MetricsInstrument;
         network: NetworkInstrument;
         traces: TracesInstrument;
     };
@@ -38,5 +38,5 @@ export declare class Inspector {
     activate(): void;
     deactivate(): void;
     createSessions(init?: SessionInit): Session;
-    getInstrument(instrument: keyof typeof this.instruments): TracesInstrument | ErrorsInstrument | LogsInstrument | MeasurementsInstrument | NetworkInstrument;
+    getInstrument(instrument: keyof typeof this.instruments): TracesInstrument | ErrorsInstrument | LogsInstrument | MetricsInstrument | NetworkInstrument;
 }

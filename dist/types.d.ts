@@ -23,6 +23,7 @@ export interface TrackResponse {
     duration: number;
     status: number;
 }
+/** @deprecated */
 export interface TraceSpan {
     attributes?: Record<string, any>;
     end: () => Omit<TraceSpan, 'end'>;
@@ -39,7 +40,9 @@ export interface ErrorObject {
     message: string;
     stack: string;
 }
-export type TraceSpanOptions = Pick<TraceSpan, 'attributes' | 'label' | 'name' | 'description' | 'traceId'> & {
+/** @deprecated */
+export type TraceSpanOptions = Pick<TraceSpan, 'attributes' | 'label' | 'description' | 'traceId'> & {
+    name?: string;
     start?: number;
     parent?: TraceSpan;
 };
@@ -98,7 +101,7 @@ export interface SessionInit {
     remoteAddress?: string;
     user?: string;
 }
-export type InspectorInstruments = 'errors' | 'logs' | 'measurements' | 'network' | 'traces';
+export type InspectorInstruments = 'errors' | 'logs' | 'metrics' | 'network' | 'traces';
 export interface Dashboard {
     measurements: {
         interval?: number;
@@ -114,7 +117,7 @@ export interface Dashboard {
 export interface BaseInstrumentInit {
     disabled?: boolean;
 }
-export interface MeasurementsInstrumentInit extends BaseInstrumentInit {
+export interface MetricsInstrumentInit extends BaseInstrumentInit {
     dashboards?: Dashboard[];
 }
 export interface NetworkInstrumentInit extends BaseInstrumentInit {
@@ -125,7 +128,7 @@ export interface NetworkInstrumentInit extends BaseInstrumentInit {
 export interface InspectorInitInstruments {
     errors?: BaseInstrumentInit;
     logs?: BaseInstrumentInit;
-    measurements?: MeasurementsInstrumentInit;
+    metrics?: MetricsInstrumentInit;
     network?: NetworkInstrumentInit;
     traces?: BaseInstrumentInit;
 }

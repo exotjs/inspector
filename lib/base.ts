@@ -10,17 +10,13 @@ export abstract class BaseInstrument<Value = any> extends EventEmitter {
   constructor(
     public name: InspectorInstruments,
     public store: Store,
-    disabled: boolean = false,
+    disabled: boolean = false
   ) {
     super();
     this.disabled = disabled;
-    this.bindStore();
-  }
-
-  bindStore() {
-    this.on('push', (time: number, label: string, value: any) => {
-      this.store.setAdd(this.name, time, value, label);
-    });
+    if (!this.disabled) {
+      this.active = true;
+    }
   }
 
   getEntryLabel(value: Value) {
@@ -50,20 +46,35 @@ export abstract class BaseInstrument<Value = any> extends EventEmitter {
   async push(
     value: Value,
     label: string = this.getEntryLabel(value),
-    time = this.getEntryTime(value),
+    time = this.getEntryTime(value)
   ) {
     if (this.active) {
-      this.emit('push', time, label, this.serializeValue(value));
+      const serialized = this.serializeValue(value);
+      await this.putToStore(time, label, serialized);
+      this.emit('push', time, label, serialized);
     }
   }
 
-  async query(store: Store, query: Query): Promise<StoreQueryResult> {
-    return store.setQuery(this.name, query.startTime, query.endTime, query.limit);
+  async query(query: Query): Promise<StoreQueryResult> {
+    return this.queryFromStore(query);
+  }
+
+  async putToStore(time: number, label: string, value: any) {
+    return this.store.setAdd(this.name, time, label, value);
+  }
+
+  async queryFromStore(query: Query) {
+    return this.store.setQuery(
+      this.name,
+      query.startTime,
+      query.endTime,
+      query.limit
+    );
   }
 
   subscribe(
     fn: (time: number, label: string, value: any) => void,
-    options?: any,
+    options?: unknown
   ): () => void {
     this.on('push', fn);
     return () => {
@@ -77,7 +88,7 @@ export abstract class SensorBase extends EventEmitter {
 
   constructor(
     public name: string,
-    public inverval: number = 5000,
+    public inverval: number = 5000
   ) {
     super();
     this.#sampleInterval = setInterval(() => {

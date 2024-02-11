@@ -28,6 +28,7 @@ export interface TrackResponse {
   status: number;
 }
 
+/** @deprecated */
 export interface TraceSpan {
   attributes?: Record<string, any>;
   end: () => Omit<TraceSpan, 'end'>;
@@ -46,10 +47,11 @@ export interface ErrorObject {
   stack: string;
 }
 
+/** @deprecated */
 export type TraceSpanOptions = Pick<
   TraceSpan,
-  'attributes' | 'label' | 'name' | 'description' | 'traceId'
-> & { start?: number; parent?: TraceSpan };
+  'attributes' | 'label' | 'description' | 'traceId'
+> & { name?: string; start?: number; parent?: TraceSpan };
 
 export interface NetworkRequest {
   duration: number;
@@ -125,7 +127,7 @@ export interface SessionInit {
 export type InspectorInstruments =
   | 'errors'
   | 'logs'
-  | 'measurements'
+  | 'metrics'
   | 'network'
   | 'traces';
 
@@ -146,7 +148,7 @@ export interface BaseInstrumentInit {
   disabled?: boolean;
 }
 
-export interface MeasurementsInstrumentInit extends BaseInstrumentInit {
+export interface MetricsInstrumentInit extends BaseInstrumentInit {
   dashboards?: Dashboard[];
 }
 
@@ -159,7 +161,7 @@ export interface NetworkInstrumentInit extends BaseInstrumentInit {
 export interface InspectorInitInstruments {
   errors?: BaseInstrumentInit;
   logs?: BaseInstrumentInit;
-  measurements?: MeasurementsInstrumentInit;
+  metrics?: MetricsInstrumentInit;
   network?: NetworkInstrumentInit;
   traces?: BaseInstrumentInit;
 }

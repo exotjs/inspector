@@ -3,7 +3,7 @@ import proc from 'node:process';
 import { Session } from './session.js';
 import { ErrorsInstrument } from './instruments/errors.js';
 import { LogsInstrument } from './instruments/logs.js';
-import { MeasurementsInstrument } from './instruments/measurements.js';
+import { MetricsInstrument } from './instruments/metrics.js';
 import { NetworkInstrument } from './instruments/network.js';
 import { TracesInstrument } from './instruments/traces.js';
 import defaultDashboards from './default-dashboards.js';
@@ -18,7 +18,7 @@ export class Inspector {
   instruments: {
     errors: ErrorsInstrument;
     logs: LogsInstrument;
-    measurements: MeasurementsInstrument;
+    metrics: MetricsInstrument;
     network: NetworkInstrument;
     traces: TracesInstrument;
   };
@@ -57,7 +57,7 @@ export class Inspector {
     this.instruments = {
       errors: new ErrorsInstrument(store, instruments.errors),
       logs: new LogsInstrument(store, instruments.logs),
-      measurements: new MeasurementsInstrument(store, instruments.measurements),
+      metrics: new MetricsInstrument(store, instruments.metrics),
       network: new NetworkInstrument(store, instruments.network),
       traces: new TracesInstrument(store, instruments.traces),
     };
