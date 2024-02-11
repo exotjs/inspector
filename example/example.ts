@@ -51,7 +51,7 @@ server.on('request', async (req, res) => {
   const path = getPath(req.url || '/');
 
   res.on('close', () => {
-    inspector.instruments.measurements.trackResponse({
+    inspector.instruments.metrics.trackResponse({
       status: res.statusCode,
       duration: performance.now() - start,
     });
