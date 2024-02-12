@@ -18,6 +18,14 @@ export class TracesInstrument extends BaseInstrument {
     });
   }
 
+  get addAttribute() {
+    return this.tracer.addAttribute;
+  }
+
+  get addEvent() {
+    return this.tracer.addEvent;
+  }
+
   get endSpan() {
     return this.tracer.endSpan;
   }
