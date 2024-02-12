@@ -74,6 +74,10 @@ server.on('request', async (req, res) => {
 
     case '/trace':
       const span = inspector.instruments.traces.startSpan('request');
+      span.attributes = {
+        method: req.method,
+        path: req.url || '/',
+      };
       await inspector.instruments.traces.trace('db:select',
         () => {
           return delay(250);
