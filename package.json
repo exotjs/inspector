@@ -1,6 +1,6 @@
 {
   "name": "@exotjs/inspector",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "Exot application inspector",
   "author": "Daniel Regeci",
   "license": "MIT",
@@ -57,7 +57,7 @@
   },
   "dependencies": {
     "@exotjs/measurements": "0.1.4",
-    "@exotjs/trace": "0.1.3"
+    "@exotjs/trace": "0.1.4"
   },
   "devDependencies": {
     "@types/node": "^20.9.0",

@@ -1,5 +1,7 @@
 import type { Store, MeasurementConfig } from '@exotjs/measurements/types';
 
+export * from '@exotjs/trace/types';
+
 export interface MeasurementsInit {
   measurements: MeasurementConfig[];
 }
@@ -28,30 +30,10 @@ export interface TrackResponse {
   status: number;
 }
 
-/** @deprecated */
-export interface TraceSpan {
-  attributes?: Record<string, any>;
-  end: () => Omit<TraceSpan, 'end'>;
-  description?: string;
-  duration: number;
-  label?: string;
-  name: string;
-  parent?: TraceSpan;
-  start: number;
-  traceId?: string;
-  traces?: TraceSpan[];
-}
-
 export interface ErrorObject {
   message: string;
   stack: string;
 }
-
-/** @deprecated */
-export type TraceSpanOptions = Pick<
-  TraceSpan,
-  'attributes' | 'label' | 'description' | 'traceId'
-> & { name?: string; start?: number; parent?: TraceSpan };
 
 export interface NetworkRequest {
   duration: number;

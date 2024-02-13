@@ -56,7 +56,7 @@ export class Inspector {
             this.instruments[key].deactivate();
         }
     }
-    createSessions(init) {
+    createSession(init) {
         const session = new Session(this, init);
         this.sessions.add(session);
         session.on('destroy', () => {

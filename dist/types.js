@@ -1,1 +1,1 @@
-export {};
+export * from '@exotjs/trace/types';

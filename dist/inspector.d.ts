@@ -37,6 +37,6 @@ export declare class Inspector {
     constructor(init: InspectorInit);
     activate(): void;
     deactivate(): void;
-    createSessions(init?: SessionInit): Session;
-    getInstrument(instrument: keyof typeof this.instruments): TracesInstrument | ErrorsInstrument | LogsInstrument | MetricsInstrument | NetworkInstrument;
+    createSession(init?: SessionInit): Session;
+    getInstrument(instrument: keyof typeof this.instruments): ErrorsInstrument | LogsInstrument | MetricsInstrument | NetworkInstrument | TracesInstrument;
 }

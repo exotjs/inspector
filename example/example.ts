@@ -32,7 +32,7 @@ async function delay(msec: number) {
 
 wss.on('connection', async (ws, req) => {
   const remoteAddress = req.socket.remoteAddress;
-  const session = inspector.createSessions({
+  const session = inspector.createSession({
     remoteAddress,
   });
   session.on('message', (data) => {

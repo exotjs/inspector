@@ -75,7 +75,7 @@ export class Inspector {
     }
   }
 
-  createSessions(init?: SessionInit) {
+  createSession(init?: SessionInit) {
     const session = new Session(this, init);
     this.sessions.add(session);
     session.on('destroy', () => {
