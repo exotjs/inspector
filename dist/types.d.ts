@@ -83,7 +83,7 @@ export interface SessionInit {
     remoteAddress?: string;
     user?: string;
 }
-export type InspectorInstruments = 'errors' | 'logs' | 'metrics' | 'network' | 'traces';
+export type InspectorInstruments = 'errors' | 'events' | 'logs' | 'metrics' | 'network' | 'traces';
 export interface Dashboard {
     measurements: {
         interval?: number;
@@ -109,6 +109,7 @@ export interface NetworkInstrumentInit extends BaseInstrumentInit {
 }
 export interface InspectorInitInstruments {
     errors?: BaseInstrumentInit;
+    events?: BaseInstrumentInit;
     logs?: BaseInstrumentInit;
     metrics?: MetricsInstrumentInit;
     network?: NetworkInstrumentInit;
@@ -119,8 +120,13 @@ export interface InspectorInit {
     store: Store;
 }
 export interface ErrorsInstrumentValue {
+    attributes?: Record<string, any>;
     message: string;
     modules?: string[];
     server?: boolean;
-    stack: string;
+    stack?: string;
+}
+export interface EventsInstrumentValue {
+    attributes?: Record<string, any>;
+    name: string;
 }

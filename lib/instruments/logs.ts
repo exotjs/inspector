@@ -10,7 +10,7 @@ export class LogsInstrument extends BaseInstrument {
     super('logs', store, disabled);
   }
 
-  async putToStore(time: number, label: string, value: any) {
+  async putToStore(time: number, label: string, value: string) {
     return this.store.listAdd(this.name, time, label, value);
   }
 
@@ -34,7 +34,7 @@ export class LogsInstrument extends BaseInstrument {
   }
 
   mountStdout() {
-    // @ts-expect-error
+    // @ts-expect-error ignore argument type errors
     process.stdout.write = (chunk, encoding, cb) => {
       if (typeof chunk === 'string') {
         this.push(this.stripAnsi(chunk), 'info');
@@ -49,7 +49,7 @@ export class LogsInstrument extends BaseInstrument {
 
   stripAnsi(str: string) {
     return str.replace(
-      /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g,
+      /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g, // eslint-disable-line
       ''
     );
   }

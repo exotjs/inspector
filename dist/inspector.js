@@ -2,6 +2,7 @@ import os from 'node:os';
 import proc from 'node:process';
 import { Session } from './session.js';
 import { ErrorsInstrument } from './instruments/errors.js';
+import { EventsInstrument } from './instruments/events.js';
 import { LogsInstrument } from './instruments/logs.js';
 import { MetricsInstrument } from './instruments/metrics.js';
 import { NetworkInstrument } from './instruments/network.js';
@@ -40,11 +41,13 @@ export class Inspector {
         this.store = store;
         this.instruments = {
             errors: new ErrorsInstrument(store, instruments.errors),
+            events: new EventsInstrument(store, instruments.events),
             logs: new LogsInstrument(store, instruments.logs),
             metrics: new MetricsInstrument(store, instruments.metrics),
             network: new NetworkInstrument(store, instruments.network),
             traces: new TracesInstrument(store, instruments.traces),
         };
+        this.activate();
     }
     activate() {
         for (let key in this.instruments) {

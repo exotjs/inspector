@@ -1,6 +1,6 @@
 {
   "name": "@exotjs/inspector",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "Exot application inspector",
   "author": "Daniel Regeci",
   "license": "MIT",
@@ -23,7 +23,8 @@
     "build": "rimraf dist && tsc -p tsconfig.build.json",
     "eslint": "eslint ./lib/**/*",
     "format": "prettier --write './(lib|tests)/**/*'",
-    "test": "vitest"
+    "test": "vitest run",
+    "prepare": "husky"
   },
   "files": [
     "dist"
@@ -56,13 +57,14 @@
     }
   },
   "dependencies": {
-    "@exotjs/measurements": "0.1.4",
+    "@exotjs/measurements": "0.1.5",
     "@exotjs/trace": "0.1.4"
   },
   "devDependencies": {
     "@types/node": "^20.9.0",
     "@typescript-eslint/eslint-plugin": "^6.21.0",
     "eslint": "^8.56.0",
+    "husky": "^9.0.11",
     "prettier": "^3.2.4",
     "rimraf": "^5.0.5",
     "ts-node": "^10.9.1",

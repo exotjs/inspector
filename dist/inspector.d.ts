@@ -1,6 +1,7 @@
 /// <reference types="node" />
 import { Session } from './session.js';
 import { ErrorsInstrument } from './instruments/errors.js';
+import { EventsInstrument } from './instruments/events.js';
 import { LogsInstrument } from './instruments/logs.js';
 import { MetricsInstrument } from './instruments/metrics.js';
 import { NetworkInstrument } from './instruments/network.js';
@@ -11,6 +12,7 @@ export declare class Inspector {
     static defaultDashboards(): Dashboard[];
     instruments: {
         errors: ErrorsInstrument;
+        events: EventsInstrument;
         logs: LogsInstrument;
         metrics: MetricsInstrument;
         network: NetworkInstrument;
@@ -38,5 +40,5 @@ export declare class Inspector {
     activate(): void;
     deactivate(): void;
     createSession(init?: SessionInit): Session;
-    getInstrument(instrument: keyof typeof this.instruments): ErrorsInstrument | LogsInstrument | MetricsInstrument | NetworkInstrument | TracesInstrument;
+    getInstrument(instrument: keyof typeof this.instruments): ErrorsInstrument | EventsInstrument | LogsInstrument | MetricsInstrument | NetworkInstrument | TracesInstrument;
 }

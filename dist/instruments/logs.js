@@ -20,7 +20,7 @@ export class LogsInstrument extends BaseInstrument {
         return super.deactivate();
     }
     mountStdout() {
-        // @ts-expect-error
+        // @ts-expect-error ignore argument type errors
         process.stdout.write = (chunk, encoding, cb) => {
             if (typeof chunk === 'string') {
                 this.push(this.stripAnsi(chunk), 'info');
@@ -32,6 +32,7 @@ export class LogsInstrument extends BaseInstrument {
         process.stdout.write = originalStdoutWrite;
     }
     stripAnsi(str) {
-        return str.replace(/[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g, '');
+        return str.replace(/[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g, // eslint-disable-line
+        '');
     }
 }

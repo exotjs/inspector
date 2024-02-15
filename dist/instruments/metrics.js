@@ -18,23 +18,11 @@ export class MetricsInstrument extends BaseInstrument {
             store,
         });
     }
-    trackResponse(response) {
-        const status = String(response.status).slice(0, 1) + 'xx';
-        this.#measurements.push({
-            'response:latency': [
-                {
-                    values: [response.duration],
-                },
-            ],
-            [`response:${status}`]: [
-                {
-                    values: [1],
-                },
-            ],
-        });
+    async push(data) {
+        return this.#measurements.push(data);
     }
     activate() {
-        for (let [key, config] of this.#measurements.measurements) {
+        for (const [key, config] of this.#measurements.measurements) {
             if (config.sensor) {
                 const cls = this.#getSensor(config.sensor);
                 const sensor = new cls(key, config.interval);
@@ -53,11 +41,14 @@ export class MetricsInstrument extends BaseInstrument {
         return super.activate();
     }
     deactivate() {
-        for (let sensor of this.sensors) {
+        for (const sensor of this.sensors) {
             sensor.destroy();
         }
         this.sensors = [];
         return super.deactivate();
+    }
+    async putToStore(_time, _label, _value) {
+        // noop
     }
     async query(query) {
         const result = await this.#measurements.export({
@@ -107,7 +98,7 @@ export class MetricsInstrument extends BaseInstrument {
     }
     #getMeasurementsFromDashboards(dashboards) {
         return dashboards.reduce((acc, dashboard) => {
-            for (let measurement of dashboard.measurements) {
+            for (const measurement of dashboard.measurements) {
                 if (!acc.find(({ key }) => key === measurement.key)) {
                     acc.push({
                         interval: measurement.interval || 10000,

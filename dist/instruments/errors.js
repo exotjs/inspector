@@ -18,9 +18,11 @@ export class ErrorsInstrument extends BaseInstrument {
         if (value instanceof Error) {
             value = {
                 message: String(value.message),
-                modules: getModulesFromCallStack(value.stack?.split('\n') || []),
                 stack: value.stack,
             };
+        }
+        if (value.modules === void 0 && value.stack) {
+            value.modules = getModulesFromCallStack(value.stack?.split('\n') || []);
         }
         return JSON.stringify(value);
     }

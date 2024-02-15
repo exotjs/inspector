@@ -10,12 +10,7 @@ import { MemoryHeapSensor } from '../sensors/memory-heap.js';
 import { EventLoopDelaySensor } from '../sensors/event-loop-delay.js';
 import { CpuSensor } from '../sensors/cpu.js';
 import { Inspector } from '../inspector.js';
-import type {
-  Dashboard,
-  MetricsInstrumentInit,
-  Query,
-  TrackResponse,
-} from '../types.js';
+import type { Dashboard, MetricsInstrumentInit, Query } from '../types.js';
 
 export class MetricsInstrument extends BaseInstrument {
   #measurements: Measurements;
@@ -34,24 +29,20 @@ export class MetricsInstrument extends BaseInstrument {
     });
   }
 
-  trackResponse(response: TrackResponse) {
-    const status = String(response.status).slice(0, 1) + 'xx';
-    this.#measurements.push({
-      'response:latency': [
-        {
-          values: [response.duration],
-        },
-      ],
-      [`response:${status}`]: [
-        {
-          values: [1],
-        },
-      ],
-    });
+  async push(
+    data: Record<
+      string,
+      {
+        label?: string;
+        values: number[];
+      }[]
+    >
+  ) {
+    return this.#measurements.push(data);
   }
 
   activate() {
-    for (let [key, config] of this.#measurements.measurements) {
+    for (const [key, config] of this.#measurements.measurements) {
       if (config.sensor) {
         const cls = this.#getSensor(config.sensor);
         const sensor = new cls(key, config.interval);
@@ -71,11 +62,15 @@ export class MetricsInstrument extends BaseInstrument {
   }
 
   deactivate() {
-    for (let sensor of this.sensors) {
+    for (const sensor of this.sensors) {
       sensor.destroy();
     }
     this.sensors = [];
     return super.deactivate();
+  }
+
+  async putToStore(_time: number, _label: string, _value: string) {
+    // noop
   }
 
   async query(query: Query & { keys: string[] }) {
@@ -91,7 +86,7 @@ export class MetricsInstrument extends BaseInstrument {
   }
 
   subscribe(
-    fn: (time: number, label: string, value: any) => void,
+    fn: (time: number, label: string, value: unknown) => void,
     options: { interval?: number; keys?: string[]; startTime?: number }
   ): () => void {
     let time = options.startTime || Date.now();
@@ -133,7 +128,7 @@ export class MetricsInstrument extends BaseInstrument {
 
   #getMeasurementsFromDashboards(dashboards: Dashboard[]): MeasurementConfig[] {
     return dashboards.reduce((acc, dashboard) => {
-      for (let measurement of dashboard.measurements) {
+      for (const measurement of dashboard.measurements) {
         if (!acc.find(({ key }) => key === measurement.key)) {
           acc.push({
             interval: measurement.interval || 10000,

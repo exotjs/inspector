@@ -11,7 +11,7 @@ export declare class TracesInstrument extends BaseInstrument {
     get endSpan(): (span: TraceSpan) => TraceSpan | undefined;
     get startSpan(): (name: string, parent?: TraceSpan | undefined) => TraceSpan;
     get trace(): <T>(name: string, fn: (ctx: import("@exotjs/trace/types").TraceContext) => T | Promise<T>, options?: import("@exotjs/trace/types").TraceOptions | undefined) => T | Promise<T>;
-    putToStore(time: number, label: string, value: any): Promise<void>;
+    putToStore(time: number, label: string, value: string): Promise<void>;
     queryFromStore(query: Query): Promise<import("@exotjs/measurements/types").StoreQueryResult>;
     getEntryLabel(value: TraceSpan): string;
     getEntryTime(entry: TraceSpan): number;

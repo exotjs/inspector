@@ -38,7 +38,7 @@ export class TracesInstrument extends BaseInstrument {
     return this.tracer.trace;
   }
 
-  async putToStore(time: number, label: string, value: any) {
+  async putToStore(time: number, label: string, value: string) {
     return this.store.listAdd(this.name, time, label, value);
   }
 

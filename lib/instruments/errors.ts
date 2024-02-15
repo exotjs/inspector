@@ -13,7 +13,7 @@ export class ErrorsInstrument extends BaseInstrument<ErrorsInstrumentValue> {
     super('errors', store, disabled);
   }
 
-  async putToStore(time: number, label: string, value: any) {
+  async putToStore(time: number, label: string, value: string) {
     return this.store.listAdd(this.name, time, label, value);
   }
 
@@ -34,9 +34,11 @@ export class ErrorsInstrument extends BaseInstrument<ErrorsInstrumentValue> {
     if (value instanceof Error) {
       value = {
         message: String(value.message),
-        modules: getModulesFromCallStack(value.stack?.split('\n') || []),
         stack: value.stack,
       };
+    }
+    if (value.modules === void 0 && value.stack) {
+      value.modules = getModulesFromCallStack(value.stack?.split('\n') || []);
     }
     return JSON.stringify(value);
   }

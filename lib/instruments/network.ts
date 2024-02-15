@@ -44,7 +44,7 @@ export class NetworkInstrument extends BaseInstrument {
     }
   }
 
-  async putToStore(time: number, label: string, value: any) {
+  async putToStore(time: number, label: string, value: string) {
     return this.store.listAdd(this.name, time, label, value);
   }
 
@@ -111,20 +111,15 @@ export class NetworkInstrument extends BaseInstrument {
     return new Promise((resolve) => {
       const _end = req.end;
       const _write = req.write;
-      req.write = (chunk: any, ...args: any[]) => {
+      req.write = (chunk: string | Buffer, ...args: [any?, any?]) => {
         onChunk(chunk);
-        // @ts-expect-error
         return _write.call(req, chunk, ...args);
       };
-      req.end = (chunk?: any, ...args: any[]) => {
-        if (chunk) {
+      req.end = (chunk?: string | Buffer | (() => void), ...args: [any?]) => {
+        if (chunk && typeof chunk !== 'function') {
           onChunk(chunk);
         }
-        if (target.body) {
-          target.body = target.body;
-        }
         resolve(void 0);
-        // @ts-expect-error
         return _end.call(req, chunk, ...args);
       };
     });
@@ -137,7 +132,7 @@ export class NetworkInstrument extends BaseInstrument {
     return new Promise((resolve) => {
       let buf = Buffer.from('');
       const _push = resp.push;
-      resp.push = (chunk: Buffer | null, ...args: any[]) => {
+      resp.push = (chunk: Buffer | null, ...args: [any?]) => {
         if (chunk === null) {
           target.body = buf;
           resolve(void 0);
@@ -251,9 +246,8 @@ export class NetworkInstrument extends BaseInstrument {
       makeRequest: typeof http.request,
       initiator: string
     ) => {
-      return function httpInterceptor(...args: any) {
+      return function httpInterceptor(...args: [any?]) {
         if (!self.active) {
-          // @ts-expect-error
           return makeRequest(...args);
         }
         const stack = getCallStack();
@@ -276,7 +270,6 @@ export class NetworkInstrument extends BaseInstrument {
           stack,
           start: Math.floor((performance.timeOrigin + start) * 100) / 100,
         };
-        // @ts-expect-error
         const req = makeRequest(...args);
         if (self.#readBody) {
           self.#readHttpRequestBody(req, request.request);

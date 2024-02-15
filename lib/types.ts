@@ -108,6 +108,7 @@ export interface SessionInit {
 
 export type InspectorInstruments =
   | 'errors'
+  | 'events'
   | 'logs'
   | 'metrics'
   | 'network'
@@ -142,6 +143,7 @@ export interface NetworkInstrumentInit extends BaseInstrumentInit {
 
 export interface InspectorInitInstruments {
   errors?: BaseInstrumentInit;
+  events?: BaseInstrumentInit;
   logs?: BaseInstrumentInit;
   metrics?: MetricsInstrumentInit;
   network?: NetworkInstrumentInit;
@@ -154,8 +156,14 @@ export interface InspectorInit {
 }
 
 export interface ErrorsInstrumentValue {
+  attributes?: Record<string, any>;
   message: string;
   modules?: string[];
   server?: boolean;
-  stack: string;
+  stack?: string;
+}
+
+export interface EventsInstrumentValue {
+  attributes?: Record<string, any>;
+  name: string;
 }

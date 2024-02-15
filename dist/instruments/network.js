@@ -77,18 +77,13 @@ export class NetworkInstrument extends BaseInstrument {
             const _write = req.write;
             req.write = (chunk, ...args) => {
                 onChunk(chunk);
-                // @ts-expect-error
                 return _write.call(req, chunk, ...args);
             };
             req.end = (chunk, ...args) => {
-                if (chunk) {
+                if (chunk && typeof chunk !== 'function') {
                     onChunk(chunk);
                 }
-                if (target.body) {
-                    target.body = target.body;
-                }
                 resolve(void 0);
-                // @ts-expect-error
                 return _end.call(req, chunk, ...args);
             };
         });
@@ -201,7 +196,6 @@ export class NetworkInstrument extends BaseInstrument {
         const createInterceptor = (makeRequest, initiator) => {
             return function httpInterceptor(...args) {
                 if (!self.active) {
-                    // @ts-expect-error
                     return makeRequest(...args);
                 }
                 const stack = getCallStack();
@@ -224,7 +218,6 @@ export class NetworkInstrument extends BaseInstrument {
                     stack,
                     start: Math.floor((performance.timeOrigin + start) * 100) / 100,
                 };
-                // @ts-expect-error
                 const req = makeRequest(...args);
                 if (self.#readBody) {
                     self.#readHttpRequestBody(req, request.request);

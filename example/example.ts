@@ -51,9 +51,18 @@ server.on('request', async (req, res) => {
   const path = getPath(req.url || '/');
 
   res.on('close', () => {
-    inspector.instruments.metrics.trackResponse({
-      status: res.statusCode,
-      duration: performance.now() - start,
+    const status = String(res.statusCode).slice(0, 1) + 'xx';
+    inspector.instruments.metrics.push({
+      'response:latency': [
+        {
+          values: [performance.now() - start],
+        },
+      ],
+      [`response:${status}`]: [
+        {
+          values: [1],
+        },
+      ],
     });
   });
 
@@ -104,6 +113,17 @@ server.on('request', async (req, res) => {
         res.statusCode = 500;
         res.end('error');
       }
+      break;
+
+    case '/event':
+      inspector.instruments.events.push({
+        attributes: {
+          method: req.method,
+          path: req.url,
+        },
+        name: 'custom_event',
+      });
+      res.end('ok');
       break;
 
     case '/fetch':
