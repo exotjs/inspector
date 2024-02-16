@@ -1,4 +1,4 @@
-import { BaseInstrument } from '../base.js';
+import { BaseInstrument } from './base.js';
 import type {
   BaseInstrumentInit,
   EventsInstrumentValue,

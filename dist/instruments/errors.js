@@ -1,4 +1,4 @@
-import { BaseInstrument } from '../base.js';
+import { BaseInstrument } from './base.js';
 import { getModulesFromCallStack } from '../helpers.js';
 export class ErrorsInstrument extends BaseInstrument {
     constructor(store, init = {}) {

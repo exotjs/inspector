@@ -1,4 +1,4 @@
-import { BaseInstrument } from '../base.js';
+import { BaseInstrument } from './base.js';
 import type { Store } from '@exotjs/measurements/types';
 import type { BaseInstrumentInit, Query } from '../types.js';
 

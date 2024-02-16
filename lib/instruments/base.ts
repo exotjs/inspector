@@ -1,6 +1,6 @@
 import { EventEmitter } from 'node:events';
 import { Store, StoreQueryResult } from '@exotjs/measurements/types';
-import type { InspectorInstruments, Query } from './types.js';
+import type { InspectorInstruments, Query } from '../types.js';
 
 export abstract class BaseInstrument<Value = any> extends EventEmitter {
   active: boolean = false;
@@ -19,11 +19,11 @@ export abstract class BaseInstrument<Value = any> extends EventEmitter {
     }
   }
 
-  getEntryLabel(value: Value) {
+  getEntryLabel(_value: Value) {
     return '';
   }
 
-  getEntryTime(value: Value) {
+  getEntryTime(_value: Value) {
     return Date.now();
   }
 
@@ -74,40 +74,11 @@ export abstract class BaseInstrument<Value = any> extends EventEmitter {
 
   subscribe(
     fn: (time: number, label: string, value: any) => void,
-    options?: unknown
+    _options?: unknown
   ): () => void {
     this.on('push', fn);
     return () => {
       this.off('push', fn);
     };
   }
-}
-
-export abstract class SensorBase extends EventEmitter {
-  #sampleInterval: NodeJS.Timeout;
-
-  constructor(
-    public name: string,
-    public inverval: number = 5000
-  ) {
-    super();
-    this.#sampleInterval = setInterval(() => {
-      this.sample()
-        .then((value) => {
-          this.emit('sample', value);
-        })
-        .catch(() => {
-          // TODO:
-        });
-    }, this.inverval);
-  }
-
-  destroy() {
-    if (this.#sampleInterval) {
-      clearInterval(this.#sampleInterval);
-    }
-    this.removeAllListeners();
-  }
-
-  abstract sample(): Promise<number>;
 }

@@ -1,4 +1,4 @@
-import { BaseInstrument } from '../base.js';
+import { BaseInstrument } from './base.js';
 const originalStdoutWrite = process.stdout.write.bind(process.stdout);
 export class LogsInstrument extends BaseInstrument {
     constructor(store, init = {}) {

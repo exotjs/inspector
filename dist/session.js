@@ -54,32 +54,34 @@ export class Session extends EventEmitter {
         return this.#subscriptions.has(subscriptionId);
     }
     async handleMessage(message) {
-        let json;
-        try {
-            json = JSON.parse(String(message));
-        }
-        catch {
-            // noop
-        }
-        if (json.type && json.id !== void 0) {
-            let data;
+        if (typeof message === 'string') {
+            let json;
             try {
-                data = await this.#onMessage(json);
+                json = JSON.parse(String(message));
             }
-            catch (err) {
-                return this.#send({
-                    error: err && typeof err.toJSON === 'function'
-                        ? err.toJSON()
-                        : { message: String(err) },
+            catch {
+                // noop
+            }
+            if (json && json.type && json.id !== void 0) {
+                let data;
+                try {
+                    data = await this.#onMessage(json);
+                }
+                catch (err) {
+                    return this.#send({
+                        error: err && typeof err.toJSON === 'function'
+                            ? err.toJSON()
+                            : { message: String(err) },
+                        id: json.id,
+                        type: 'error',
+                    });
+                }
+                this.#send({
+                    data,
                     id: json.id,
-                    type: 'error',
+                    type: 'ok',
                 });
             }
-            this.#send({
-                data,
-                id: json.id,
-                type: 'ok',
-            });
         }
     }
     async #onMessage(message) {

@@ -1,7 +1,7 @@
 import http from 'node:http';
 import https from 'node:https';
-import { BaseInstrument } from '../base.js';
-import { getCallStack, getModulesFromCallStack, isBun } from '../helpers.js';
+import { BaseInstrument } from './base.js';
+import { getFunctionCallStack, getModulesFromCallStack, isBun, } from '../helpers.js';
 const CONTENT_TYPE_TEXT = [
     'application/json',
     'application/xml',
@@ -136,7 +136,7 @@ export class NetworkInstrument extends BaseInstrument {
             if (!self.active) {
                 return fetchFn(input, init);
             }
-            const stack = getCallStack();
+            const stack = getFunctionCallStack();
             const start = performance.now();
             const request = {
                 duration: 0,
@@ -198,7 +198,7 @@ export class NetworkInstrument extends BaseInstrument {
                 if (!self.active) {
                     return makeRequest(...args);
                 }
-                const stack = getCallStack();
+                const stack = getFunctionCallStack();
                 const start = performance.now();
                 const request = {
                     duration: 0,

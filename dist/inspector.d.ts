@@ -37,6 +37,7 @@ export declare class Inspector {
         startedAt: number;
     };
     constructor(init: InspectorInit);
+    destroy(): void;
     activate(): void;
     deactivate(): void;
     createSession(init?: SessionInit): Session;

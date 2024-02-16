@@ -13,10 +13,10 @@ export class BaseInstrument extends EventEmitter {
             this.active = true;
         }
     }
-    getEntryLabel(value) {
+    getEntryLabel(_value) {
         return '';
     }
-    getEntryTime(value) {
+    getEntryTime(_value) {
         return Date.now();
     }
     serializeValue(value) {
@@ -48,35 +48,10 @@ export class BaseInstrument extends EventEmitter {
     async queryFromStore(query) {
         return this.store.setQuery(this.name, query.startTime, query.endTime, query.limit);
     }
-    subscribe(fn, options) {
+    subscribe(fn, _options) {
         this.on('push', fn);
         return () => {
             this.off('push', fn);
         };
-    }
-}
-export class SensorBase extends EventEmitter {
-    name;
-    inverval;
-    #sampleInterval;
-    constructor(name, inverval = 5000) {
-        super();
-        this.name = name;
-        this.inverval = inverval;
-        this.#sampleInterval = setInterval(() => {
-            this.sample()
-                .then((value) => {
-                this.emit('sample', value);
-            })
-                .catch(() => {
-                // TODO:
-            });
-        }, this.inverval);
-    }
-    destroy() {
-        if (this.#sampleInterval) {
-            clearInterval(this.#sampleInterval);
-        }
-        this.removeAllListeners();
     }
 }

@@ -1,5 +1,6 @@
 import { Store, StoreEntry } from '@exotjs/measurements/types';
-import { BaseInstrument, SensorBase } from '../base.js';
+import { BaseInstrument } from './base.js';
+import { SensorBase } from '../sensors/base.js';
 import type { Dashboard, MetricsInstrumentInit, Query } from '../types.js';
 export declare class MetricsInstrument extends BaseInstrument {
     #private;

@@ -13,7 +13,7 @@ export class InactiveInstrumentError extends BaseError {
   code = 1001;
 
   constructor() {
-    super('Instrument not active.');
+    super('Instrument is not active.');
   }
 }
 
@@ -21,6 +21,6 @@ export class DisabledInstrumentError extends BaseError {
   code = 1002;
 
   constructor() {
-    super('Instrument disabled.');
+    super('Instrument is disabled.');
   }
 }

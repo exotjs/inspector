@@ -1,4 +1,4 @@
-import { BaseInstrument } from '../base.js';
+import { BaseInstrument } from './base.js';
 import { getModulesFromCallStack } from '../helpers.js';
 import type {
   BaseInstrumentInit,

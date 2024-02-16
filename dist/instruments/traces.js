@@ -1,4 +1,4 @@
-import { BaseInstrument } from '../base.js';
+import { BaseInstrument } from './base.js';
 import { Tracer } from '@exotjs/trace';
 export class TracesInstrument extends BaseInstrument {
     tracer;

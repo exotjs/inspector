@@ -4,7 +4,8 @@ import {
   StoreEntry,
 } from '@exotjs/measurements/types';
 import { Measurements } from '@exotjs/measurements';
-import { BaseInstrument, SensorBase } from '../base.js';
+import { BaseInstrument } from './base.js';
+import { SensorBase } from '../sensors/base.js';
 import { MemoryRssSensor } from '../sensors/memory-rss.js';
 import { MemoryHeapSensor } from '../sensors/memory-heap.js';
 import { EventLoopDelaySensor } from '../sensors/event-loop-delay.js';

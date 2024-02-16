@@ -73,31 +73,33 @@ export class Session extends EventEmitter {
   async handleMessage(
     message: string | ArrayBuffer | ArrayBuffer[] | Uint8Array
   ) {
-    let json;
-    try {
-      json = JSON.parse(String(message));
-    } catch {
-      // noop
-    }
-    if (json.type && json.id !== void 0) {
-      let data: any;
+    if (typeof message === 'string') {
+      let json;
       try {
-        data = await this.#onMessage(json);
-      } catch (err: any) {
-        return this.#send({
-          error:
-            err && typeof err.toJSON === 'function'
-              ? err.toJSON()
-              : { message: String(err) },
+        json = JSON.parse(String(message));
+      } catch {
+        // noop
+      }
+      if (json && json.type && json.id !== void 0) {
+        let data: any;
+        try {
+          data = await this.#onMessage(json);
+        } catch (err: any) {
+          return this.#send({
+            error:
+              err && typeof err.toJSON === 'function'
+                ? err.toJSON()
+                : { message: String(err) },
+            id: json.id,
+            type: 'error',
+          });
+        }
+        this.#send({
+          data,
           id: json.id,
-          type: 'error',
+          type: 'ok',
         });
       }
-      this.#send({
-        data,
-        id: json.id,
-        type: 'ok',
-      });
     }
   }
 

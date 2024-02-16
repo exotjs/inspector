@@ -49,6 +49,13 @@ export class Inspector {
         };
         this.activate();
     }
+    destroy() {
+        for (const session of this.sessions) {
+            session.destroy();
+        }
+        this.deactivate();
+        this.store.destroy();
+    }
     activate() {
         for (let key in this.instruments) {
             this.instruments[key].activate();
@@ -69,7 +76,7 @@ export class Inspector {
     }
     getInstrument(instrument) {
         if (!this.instruments[instrument]) {
-            throw new Error(`Unknown instrument ${instrument}.`);
+            throw new Error(`Unknown instrument "${instrument}".`);
         }
         return this.instruments[instrument];
     }

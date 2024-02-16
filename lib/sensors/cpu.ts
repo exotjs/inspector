@@ -1,5 +1,5 @@
 import proc from 'node:process';
-import { SensorBase } from '../base.js';
+import { SensorBase } from './base.js';
 
 export class CpuSensor extends SensorBase {
   #prevUsage?: NodeJS.CpuUsage;

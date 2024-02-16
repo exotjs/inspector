@@ -1,4 +1,4 @@
-import { BaseInstrument } from '../base.js';
+import { BaseInstrument } from './base.js';
 export class EventsInstrument extends BaseInstrument {
     constructor(store, init = {}) {
         const { disabled = false } = init;
