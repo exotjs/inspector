@@ -1,1 +1,1 @@
-export * from './inspector';
+export * from './inspector.js';
