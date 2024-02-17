@@ -2,6 +2,7 @@ import { randomBytes } from 'node:crypto';
 import { EventEmitter } from 'node:events';
 import { validate } from './helpers.js';
 import { DisabledInstrumentError, InactiveInstrumentError } from './errors.js';
+const decoder = new TextDecoder();
 export class Session extends EventEmitter {
     inspector;
     id = randomBytes(6).toString('hex').toUpperCase();
@@ -54,34 +55,35 @@ export class Session extends EventEmitter {
         return this.#subscriptions.has(subscriptionId);
     }
     async handleMessage(message) {
-        if (typeof message === 'string') {
-            let json;
+        if (message instanceof Uint8Array) {
+            message = decoder.decode(message);
+        }
+        let json;
+        try {
+            json = JSON.parse(String(message));
+        }
+        catch {
+            // noop
+        }
+        if (json && json.type && json.id !== void 0) {
+            let data;
             try {
-                json = JSON.parse(String(message));
+                data = await this.#onMessage(json);
             }
-            catch {
-                // noop
-            }
-            if (json && json.type && json.id !== void 0) {
-                let data;
-                try {
-                    data = await this.#onMessage(json);
-                }
-                catch (err) {
-                    return this.#send({
-                        error: err && typeof err.toJSON === 'function'
-                            ? err.toJSON()
-                            : { message: String(err) },
-                        id: json.id,
-                        type: 'error',
-                    });
-                }
-                this.#send({
-                    data,
+            catch (err) {
+                return this.#send({
+                    error: err && typeof err.toJSON === 'function'
+                        ? err.toJSON()
+                        : { message: String(err) },
                     id: json.id,
-                    type: 'ok',
+                    type: 'error',
                 });
             }
+            this.#send({
+                data,
+                id: json.id,
+                type: 'ok',
+            });
         }
     }
     async #onMessage(message) {

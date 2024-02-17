@@ -5,6 +5,8 @@ import { validate } from './helpers.js';
 import { DisabledInstrumentError, InactiveInstrumentError } from './errors.js';
 import type { SessionInit, WebSocketMessage } from './types.js';
 
+const decoder = new TextDecoder();
+
 export class Session extends EventEmitter {
   id: string = randomBytes(6).toString('hex').toUpperCase();
 
@@ -73,33 +75,34 @@ export class Session extends EventEmitter {
   async handleMessage(
     message: string | ArrayBuffer | ArrayBuffer[] | Uint8Array
   ) {
-    if (typeof message === 'string') {
-      let json;
+    if (message instanceof Uint8Array) {
+      message = decoder.decode(message);
+    }
+    let json;
+    try {
+      json = JSON.parse(String(message));
+    } catch {
+      // noop
+    }
+    if (json && json.type && json.id !== void 0) {
+      let data: any;
       try {
-        json = JSON.parse(String(message));
-      } catch {
-        // noop
-      }
-      if (json && json.type && json.id !== void 0) {
-        let data: any;
-        try {
-          data = await this.#onMessage(json);
-        } catch (err: any) {
-          return this.#send({
-            error:
-              err && typeof err.toJSON === 'function'
-                ? err.toJSON()
-                : { message: String(err) },
-            id: json.id,
-            type: 'error',
-          });
-        }
-        this.#send({
-          data,
+        data = await this.#onMessage(json);
+      } catch (err: any) {
+        return this.#send({
+          error:
+            err && typeof err.toJSON === 'function'
+              ? err.toJSON()
+              : { message: String(err) },
           id: json.id,
-          type: 'ok',
+          type: 'error',
         });
       }
+      this.#send({
+        data,
+        id: json.id,
+        type: 'ok',
+      });
     }
   }
 
