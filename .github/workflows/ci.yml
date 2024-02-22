@@ -6,26 +6,15 @@ on:
     branches: ['*']
 
 jobs:
-  main:
-    name: 'Main'
+  deno:
+    name: 'Deno'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: denoland/setup-deno@v1
         with:
-          node-version: 20.x
-      - run: npm install --frozen-lockfile
-      - run: NODE_OPTIONS="--no-warnings" npm test
-
-  # deno:
-  #   name: 'Deno'
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #     - uses: denoland/setup-deno@v1
-  #       with:
-  #         deno-version: v1.x
-  #     - run: npm run test:deno
+          deno-version: v1.x
+      - run: npm run test:deno
 
   bun:
     name: 'Bun'
