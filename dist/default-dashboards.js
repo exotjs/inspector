@@ -3,52 +3,6 @@ export default [
         templateId: 'monitoring',
         templateVersion: 1,
         name: 'Monitoring',
-        measurements: [
-            {
-                interval: 10000,
-                key: 'cpu',
-                sensor: 'cpu',
-            },
-            {
-                interval: 10000,
-                key: 'memory:rss',
-                sensor: 'memory-rss',
-            },
-            {
-                interval: 10000,
-                key: 'memory:heap',
-                sensor: 'memory-heap',
-            },
-            {
-                interval: 10000,
-                key: 'eventloop',
-                sensor: 'event-loop-delay',
-            },
-            {
-                key: 'response:1xx',
-                type: 'sum',
-            },
-            {
-                key: 'response:2xx',
-                type: 'sum',
-            },
-            {
-                key: 'response:3xx',
-                type: 'sum',
-            },
-            {
-                key: 'response:4xx',
-                type: 'sum',
-            },
-            {
-                key: 'response:5xx',
-                type: 'sum',
-            },
-            {
-                key: 'response:latency',
-                type: 'aggregate',
-            },
-        ],
         panels: [
             {
                 colspan: 6,

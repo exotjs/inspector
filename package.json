@@ -1,6 +1,6 @@
 {
   "name": "@exotjs/inspector",
-  "version": "0.1.12",
+  "version": "0.1.13",
   "description": "Exot application inspector",
   "author": "Daniel Regeci",
   "license": "MIT",
@@ -21,9 +21,11 @@
   "type": "module",
   "scripts": {
     "build": "rimraf dist && tsc -p tsconfig.build.json",
+    "denoify": "rimraf deno_dist && denoify && find deno_dist/. -type f -exec sed -i '' -e 's/node:node:/node:/g' {} +",
     "eslint": "eslint ./lib/**/*",
     "format": "prettier --write './(lib|tests)/**/*'",
     "test": "vitest run",
+    "test:deno": "deno test --allow-env --allow-sys tests/deno.ts",
     "prepare": "husky"
   },
   "files": [
@@ -63,8 +65,10 @@
   "devDependencies": {
     "@types/node": "^20.9.0",
     "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "denoify": "^1.6.9",
     "eslint": "^8.56.0",
     "husky": "^9.0.11",
+    "pino": "^8.19.0",
     "prettier": "^3.2.4",
     "rimraf": "^5.0.5",
     "ts-node": "^10.9.1",

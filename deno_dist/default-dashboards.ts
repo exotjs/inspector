@@ -1,4 +1,4 @@
-import type { Dashboard } from './types.js';
+import type { Dashboard } from './types.ts';
 
 export default [
   {

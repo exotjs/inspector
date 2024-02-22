@@ -10,11 +10,11 @@ export class MetricsInstrument extends BaseInstrument {
     dashboards;
     sensors = [];
     constructor(store, init = {}) {
-        const { dashboards = [], disabled = false } = init;
+        const { dashboards = [], disabled = false, measurements = [] } = init;
         super('metrics', store, disabled);
         this.dashboards = [...Inspector.defaultDashboards(), ...dashboards];
         this.#measurements = new Measurements({
-            measurements: this.#getMeasurementsFromDashboards(this.dashboards),
+            measurements: [...Inspector.defaultMeasurements(), ...measurements],
             store,
         });
     }
@@ -95,21 +95,6 @@ export class MetricsInstrument extends BaseInstrument {
                 clearInterval(interval);
             }
         };
-    }
-    #getMeasurementsFromDashboards(dashboards) {
-        return dashboards.reduce((acc, dashboard) => {
-            for (const measurement of dashboard.measurements) {
-                if (!acc.find(({ key }) => key === measurement.key)) {
-                    acc.push({
-                        interval: measurement.interval || 10000,
-                        key: measurement.key,
-                        type: measurement.type || 'aggregate',
-                        sensor: measurement.sensor,
-                    });
-                }
-            }
-            return acc;
-        }, []);
     }
     #getSensor(type) {
         switch (type) {

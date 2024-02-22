@@ -1,4 +1,5 @@
-import { ValidationSchema } from './types.js';
+import process from "node:process";
+import { ValidationSchema } from './types.ts';
 
 export function isBun() {
   return !!process.versions.bun;

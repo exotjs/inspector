@@ -8,18 +8,18 @@ import { MetricsInstrument } from './instruments/metrics.js';
 import { NetworkInstrument } from './instruments/network.js';
 import { TracesInstrument } from './instruments/traces.js';
 import defaultDashboards from './default-dashboards.js';
+import defaultMeasurements from './default-measurements.js';
 export class Inspector {
     static defaultDashboards() {
         return defaultDashboards;
     }
+    static defaultMeasurements() {
+        return defaultMeasurements;
+    }
+    env = {};
     instruments;
     sessions = new Set();
     store;
-    get env() {
-        return {
-            ...proc.env,
-        };
-    }
     get info() {
         const cpus = os.cpus();
         const runtime = (proc.title?.match(/[^\w]/) ? proc.release.name : proc.title) || 'node';
@@ -37,7 +37,7 @@ export class Inspector {
         };
     }
     constructor(init) {
-        const { instruments = {}, store } = init;
+        const { activate = true, env = true, instruments = {}, store } = init;
         this.store = store;
         this.instruments = {
             errors: new ErrorsInstrument(store, instruments.errors),
@@ -47,7 +47,12 @@ export class Inspector {
             network: new NetworkInstrument(store, instruments.network),
             traces: new TracesInstrument(store, instruments.traces),
         };
-        this.activate();
+        if (env) {
+            Object.assign(this.env, proc.env);
+        }
+        if (activate) {
+            this.activate();
+        }
     }
     destroy() {
         for (const session of this.sessions) {

@@ -2,22 +2,6 @@ declare const _default: {
     templateId: string;
     templateVersion: number;
     name: string;
-    measurements: ({
-        interval: number;
-        key: string;
-        sensor: string;
-        type?: undefined;
-    } | {
-        key: string;
-        type: "sum";
-        interval?: undefined;
-        sensor?: undefined;
-    } | {
-        key: string;
-        type: "aggregate";
-        interval?: undefined;
-        sensor?: undefined;
-    })[];
     panels: ({
         colspan: number;
         legend: {

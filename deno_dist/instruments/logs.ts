@@ -1,8 +1,9 @@
+import process from "node:process";
 import { AsyncLocalStorage } from 'node:async_hooks';
 import utils from 'node:util';
-import { BaseInstrument } from './base.js';
-import type { Store } from '@exotjs/measurements/types';
-import type { LogsInstrumentInit, Query } from '../types.js';
+import { BaseInstrument } from './base.ts';
+import type { Store } from 'npm:@exotjs/measurements@0.1.5/types';
+import type { LogsInstrumentInit, Query } from '../types.ts';
 
 const originalStdoutWrite = process.stdout.write.bind(process.stdout);
 const originalConsoleDescriptors = Object.getOwnPropertyDescriptors(console);

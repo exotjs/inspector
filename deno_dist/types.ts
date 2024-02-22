@@ -1,6 +1,7 @@
-import type { Store, MeasurementConfig } from '@exotjs/measurements/types';
+import { Buffer } from "node:buffer";
+import type { Store, MeasurementConfig } from 'npm:@exotjs/measurements@0.1.5/types';
 
-export * from '@exotjs/trace/types';
+export * from 'npm:@exotjs/trace@0.1.4/types';
 
 export interface MeasurementsInit {
   measurements: MeasurementConfig[];

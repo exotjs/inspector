@@ -1,16 +1,16 @@
 import os from 'node:os';
 import proc from 'node:process';
-import { Session } from './session.js';
-import { ErrorsInstrument } from './instruments/errors.js';
-import { EventsInstrument } from './instruments/events.js';
-import { LogsInstrument } from './instruments/logs.js';
-import { MetricsInstrument } from './instruments/metrics.js';
-import { NetworkInstrument } from './instruments/network.js';
-import { TracesInstrument } from './instruments/traces.js';
-import defaultDashboards from './default-dashboards.js';
-import defaultMeasurements from './default-measurements.js';
-import type { Dashboard, InspectorInit, SessionInit } from './types.js';
-import type { MeasurementConfig, Store } from '@exotjs/measurements/types';
+import { Session } from './session.ts';
+import { ErrorsInstrument } from './instruments/errors.ts';
+import { EventsInstrument } from './instruments/events.ts';
+import { LogsInstrument } from './instruments/logs.ts';
+import { MetricsInstrument } from './instruments/metrics.ts';
+import { NetworkInstrument } from './instruments/network.ts';
+import { TracesInstrument } from './instruments/traces.ts';
+import defaultDashboards from './default-dashboards.ts';
+import defaultMeasurements from './default-measurements.ts';
+import type { Dashboard, InspectorInit, SessionInit } from './types.ts';
+import type { MeasurementConfig, Store } from 'npm:@exotjs/measurements@0.1.5/types';
 
 export class Inspector {
   static defaultDashboards(): Dashboard[] {

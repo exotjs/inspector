@@ -2,17 +2,14 @@ export function isBun() {
     return !!process.versions.bun;
 }
 export function getFunctionCallStack(ignore = ['getFunctionCallStack']) {
-    try {
-        throw new Error('');
-    }
-    catch (err) {
-        const stack = err.stack;
-        return stack
-            .split('\n')
-            .slice(1)
-            .filter((line) => ignore.every((i) => !line.includes(i)))
-            .map((line) => line.replace(/^\s+at\s/, ''));
-    }
+    const obj = {};
+    Error.captureStackTrace(obj);
+    const stack = obj.stack;
+    return stack
+        .split('\n')
+        .slice(1)
+        .filter((line) => ignore.every((i) => !line.includes(i)))
+        .map((line) => line.replace(/^\s+at\s/, ''));
 }
 export function getModulesFromCallStack(stack) {
     return stack.reduce((acc, line) => {

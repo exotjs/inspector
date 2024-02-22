@@ -1,13 +1,29 @@
 import { BaseInstrument } from './base.js';
 import type { Store } from '@exotjs/measurements/types';
-import type { BaseInstrumentInit, Query } from '../types.js';
+import type { LogsInstrumentInit, Query } from '../types.js';
 export declare class LogsInstrument extends BaseInstrument {
-    constructor(store: Store, init?: BaseInstrumentInit);
+    #private;
+    static CONSOLE_LEVELS: {
+        assert: string;
+        count: string;
+        debug: string;
+        dir: string;
+        error: string;
+        info: string;
+        log: string;
+        trace: string;
+        warn: string;
+    };
+    console: boolean;
+    stdout: boolean;
+    constructor(store: Store, init?: LogsInstrumentInit);
     putToStore(time: number, label: string, value: string): Promise<void>;
     queryFromStore(query: Query): Promise<import("@exotjs/measurements/types").StoreQueryResult>;
     activate(): boolean;
     deactivate(): boolean;
-    mountStdout(): void;
-    unmountStdout(): void;
+    interceptConsole(): void;
+    interceptStdout(): void;
+    restoreConsole(): void;
+    restoreStdout(): void;
     stripAnsi(str: string): string;
 }

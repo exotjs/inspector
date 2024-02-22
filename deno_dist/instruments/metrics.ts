@@ -1,16 +1,16 @@
 import {
   Store,
   StoreEntry,
-} from '@exotjs/measurements/types';
-import { Measurements } from '@exotjs/measurements';
-import { BaseInstrument } from './base.js';
-import { SensorBase } from '../sensors/base.js';
-import { MemoryRssSensor } from '../sensors/memory-rss.js';
-import { MemoryHeapSensor } from '../sensors/memory-heap.js';
-import { EventLoopDelaySensor } from '../sensors/event-loop-delay.js';
-import { CpuSensor } from '../sensors/cpu.js';
-import { Inspector } from '../inspector.js';
-import type { Dashboard, MetricsInstrumentInit, Query } from '../types.js';
+} from 'npm:@exotjs/measurements@0.1.5/types';
+import { Measurements } from 'npm:@exotjs/measurements@0.1.5';
+import { BaseInstrument } from './base.ts';
+import { SensorBase } from '../sensors/base.ts';
+import { MemoryRssSensor } from '../sensors/memory-rss.ts';
+import { MemoryHeapSensor } from '../sensors/memory-heap.ts';
+import { EventLoopDelaySensor } from '../sensors/event-loop-delay.ts';
+import { CpuSensor } from '../sensors/cpu.ts';
+import { Inspector } from '../inspector.ts';
+import type { Dashboard, MetricsInstrumentInit, Query } from '../types.ts';
 
 export class MetricsInstrument extends BaseInstrument {
   #measurements: Measurements;

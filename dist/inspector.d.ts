@@ -7,9 +7,11 @@ import { MetricsInstrument } from './instruments/metrics.js';
 import { NetworkInstrument } from './instruments/network.js';
 import { TracesInstrument } from './instruments/traces.js';
 import type { Dashboard, InspectorInit, SessionInit } from './types.js';
-import type { Store } from '@exotjs/measurements/types';
+import type { MeasurementConfig, Store } from '@exotjs/measurements/types';
 export declare class Inspector {
     static defaultDashboards(): Dashboard[];
+    static defaultMeasurements(): MeasurementConfig[];
+    env: Record<string, string>;
     instruments: {
         errors: ErrorsInstrument;
         events: EventsInstrument;
@@ -20,10 +22,6 @@ export declare class Inspector {
     };
     sessions: Set<Session>;
     store: Store;
-    get env(): {
-        [x: string]: string | undefined;
-        TZ?: string | undefined;
-    };
     get info(): {
         apiVersion: string;
         arch: string;

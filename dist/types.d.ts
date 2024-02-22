@@ -68,7 +68,7 @@ export interface DashboardPanel {
     data?: any[];
     format?: string;
     height?: string;
-    legend?: boolean | Record<string, string>;
+    legend?: boolean | Record<string, string | undefined>;
     maxValue?: number;
     maxPoints?: number;
     measurements?: string[];
@@ -85,12 +85,6 @@ export interface SessionInit {
 }
 export type InspectorInstruments = 'errors' | 'events' | 'logs' | 'metrics' | 'network' | 'traces';
 export interface Dashboard {
-    measurements: {
-        interval?: number;
-        key: string;
-        sensor?: string;
-        type?: MeasurementConfig['type'];
-    }[];
     name: string;
     panels: DashboardPanel[];
     templateId: string;
@@ -99,8 +93,13 @@ export interface Dashboard {
 export interface BaseInstrumentInit {
     disabled?: boolean;
 }
+export interface LogsInstrumentInit extends BaseInstrumentInit {
+    console?: boolean;
+    stdout?: boolean;
+}
 export interface MetricsInstrumentInit extends BaseInstrumentInit {
     dashboards?: Dashboard[];
+    measurements?: MeasurementConfig[];
 }
 export interface NetworkInstrumentInit extends BaseInstrumentInit {
     interceptors?: Array<'http' | 'fetch'>;
@@ -110,12 +109,14 @@ export interface NetworkInstrumentInit extends BaseInstrumentInit {
 export interface InspectorInitInstruments {
     errors?: BaseInstrumentInit;
     events?: BaseInstrumentInit;
-    logs?: BaseInstrumentInit;
+    logs?: LogsInstrumentInit;
     metrics?: MetricsInstrumentInit;
     network?: NetworkInstrumentInit;
     traces?: BaseInstrumentInit;
 }
 export interface InspectorInit {
+    activate?: boolean;
+    env?: boolean;
     instruments?: InspectorInitInstruments;
     store: Store;
 }
