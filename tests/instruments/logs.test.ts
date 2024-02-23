@@ -101,5 +101,5 @@ describe('Logs', () => {
       logger.info('test');
       expect(spy).toHaveBeenCalled();
     });
-  })
+  });
 });

@@ -1,6 +1,6 @@
 import {
   assertEquals,
-  assertExists
+  assertExists,
 } from 'https://deno.land/std@0.213.0/assert/mod.ts';
 import { Inspector } from '../deno_dist/index.ts';
 import { MemoryStore } from '../deno_dist/store.ts';
@@ -14,7 +14,7 @@ Deno.test('Inspector', async (t) => {
     const inspector = new Inspector({
       store: new MemoryStore(),
     });
-    assertExists(inspector.info)
+    assertExists(inspector.info);
     inspector.destroy();
   });
 });

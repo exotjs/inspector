@@ -26,16 +26,19 @@ export class ErrorsInstrument extends BaseInstrument<ErrorsInstrumentValue> {
     );
   }
 
-  getEntryLabel(value: ErrorsInstrumentValue) {
-    return value.server === false ? 'client' : 'server';
-  }
-
   serializeValue(value: ErrorsInstrumentValue) {
     if (value instanceof Error) {
       value = {
         message: String(value.message),
         stack: value.stack,
       };
+    } else if (value.error) {
+      if (!value.message) {
+        value.message = value.error.message;
+      }
+      if (!value.stack) {
+        value.stack = value.error.stack;
+      }
     }
     if (value.modules === void 0 && value.stack) {
       value.modules = getModulesFromCallStack(value.stack?.split('\n') || []);

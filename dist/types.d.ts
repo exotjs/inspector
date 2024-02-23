@@ -94,8 +94,7 @@ export interface BaseInstrumentInit {
     disabled?: boolean;
 }
 export interface LogsInstrumentInit extends BaseInstrumentInit {
-    console?: boolean;
-    stdout?: boolean;
+    interceptors?: Array<'console' | 'stdout'>;
 }
 export interface MetricsInstrumentInit extends BaseInstrumentInit {
     dashboards?: Dashboard[];
@@ -122,9 +121,9 @@ export interface InspectorInit {
 }
 export interface ErrorsInstrumentValue {
     attributes?: Record<string, any>;
-    message: string;
+    error?: any;
+    message?: string;
     modules?: string[];
-    server?: boolean;
     stack?: string;
 }
 export interface EventsInstrumentValue {

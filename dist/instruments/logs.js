@@ -16,13 +16,11 @@ export class LogsInstrument extends BaseInstrument {
         warn: 'warn',
     };
     #als = new AsyncLocalStorage();
-    console = true;
-    stdout = true;
+    #interceptors = [];
     constructor(store, init = {}) {
-        const { console: interceptConsole = true, disabled = false, stdout: interceptStdout = true } = init;
+        const { interceptors = ['console', 'stdout'], disabled = false } = init;
         super('logs', store, disabled);
-        this.console = interceptConsole;
-        this.stdout = interceptStdout;
+        this.#interceptors = interceptors;
     }
     async putToStore(time, label, value) {
         return this.store.listAdd(this.name, time, label, value);
@@ -31,14 +29,20 @@ export class LogsInstrument extends BaseInstrument {
         return this.store.listQuery(this.name, query.startTime, query.endTime, query.limit);
     }
     activate() {
-        if (this.stdout) {
+        if (this.#interceptors.includes('stdout')) {
             this.interceptStdout();
+        }
+        if (this.#interceptors.includes('console')) {
+            this.interceptConsole();
         }
         return super.activate();
     }
     deactivate() {
-        if (this.stdout) {
+        if (this.#interceptors.includes('stdout')) {
             this.restoreStdout();
+        }
+        if (this.#interceptors.includes('console')) {
+            this.restoreConsole();
         }
         return super.deactivate();
     }
@@ -46,7 +50,7 @@ export class LogsInstrument extends BaseInstrument {
         for (const method in LogsInstrument.CONSOLE_LEVELS) {
             const level = LogsInstrument.CONSOLE_LEVELS[method];
             const desc = originalConsoleDescriptors[method];
-            // @ts-expect-error
+            // @ts-expect-error supress key error
             console[method] = (...args) => {
                 return this.#als.run(true, () => {
                     this.push(utils.format(...args), level);
@@ -67,7 +71,7 @@ export class LogsInstrument extends BaseInstrument {
     restoreConsole() {
         for (const method in LogsInstrument.CONSOLE_LEVELS) {
             const desc = originalConsoleDescriptors[method];
-            // @ts-expect-error
+            // @ts-expect-error supress key error
             console[method] = desc.value;
         }
     }

@@ -5,6 +5,5 @@ export declare class ErrorsInstrument extends BaseInstrument<ErrorsInstrumentVal
     constructor(store: Store, init?: BaseInstrumentInit);
     putToStore(time: number, label: string, value: string): Promise<void>;
     queryFromStore(query: Query): Promise<import("@exotjs/measurements/types").StoreQueryResult>;
-    getEntryLabel(value: ErrorsInstrumentValue): "client" | "server";
     serializeValue(value: ErrorsInstrumentValue): string;
 }

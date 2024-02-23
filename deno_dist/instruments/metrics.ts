@@ -1,7 +1,4 @@
-import {
-  Store,
-  StoreEntry,
-} from 'npm:@exotjs/measurements@0.1.5/types';
+import { Store, StoreEntry } from 'npm:@exotjs/measurements@0.1.5/types';
 import { Measurements } from 'npm:@exotjs/measurements@0.1.5';
 import { BaseInstrument } from './base.ts';
 import { SensorBase } from '../sensors/base.ts';

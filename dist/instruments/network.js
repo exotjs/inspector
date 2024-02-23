@@ -15,6 +15,7 @@ export class NetworkInstrument extends BaseInstrument {
     #fetch = globalThis.fetch;
     #httpRequest = http.request;
     #httpsRequest = https.request;
+    #interceptors = [];
     #maxBodySize = 0;
     #readBody = true;
     constructor(store, init = {}) {
@@ -22,12 +23,7 @@ export class NetworkInstrument extends BaseInstrument {
         super('network', store, disabled);
         this.#maxBodySize = maxBodySize;
         this.#readBody = readBody;
-        if (interceptors.includes('fetch')) {
-            this.interceptFetch();
-        }
-        if (interceptors.includes('http')) {
-            this.interceptHttp();
-        }
+        this.#interceptors = interceptors;
     }
     async putToStore(time, label, value) {
         return this.store.listAdd(this.name, time, label, value);
@@ -45,21 +41,33 @@ export class NetworkInstrument extends BaseInstrument {
         return this.createFetch();
     }
     activate() {
+        if (this.#interceptors.includes('fetch')) {
+            this.interceptFetch();
+        }
+        if (this.#interceptors.includes('http')) {
+            this.interceptHttp();
+        }
         return super.activate();
     }
     deactivate() {
+        if (this.#interceptors.includes('fetch')) {
+            this.restoreFetch();
+        }
+        if (this.#interceptors.includes('http')) {
+            this.restoreHttp();
+        }
         return super.deactivate();
     }
-    push(request) {
-        if (request.request.body) {
-            request.request.bodySize = request.request.body.length;
-            request.request.body = this.#flattenBody(request.request.body, request.request.headers['content-type']);
+    push(value, label = this.getEntryLabel(value), time = this.getEntryTime(value)) {
+        if (value.request.body) {
+            value.request.bodySize = value.request.body.length;
+            value.request.body = this.#flattenBody(value.request.body, value.request.headers['content-type']);
         }
-        if (request.response.body) {
-            request.response.bodySize = request.response.body.length;
-            request.response.body = this.#flattenBody(request.response.body, request.response.headers['content-type']);
+        if (value.response.body) {
+            value.response.bodySize = value.response.body.length;
+            value.response.body = this.#flattenBody(value.response.body, value.response.headers['content-type']);
         }
-        return super.push(request);
+        return super.push(value, label, time);
     }
     async #readHttpRequestBody(req, target) {
         const onChunk = (chunk) => {

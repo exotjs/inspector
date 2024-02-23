@@ -27,6 +27,8 @@ export class NetworkInstrument extends BaseInstrument {
 
   #httpsRequest = https.request;
 
+  #interceptors: Array<'http' | 'fetch'> = [];
+
   #maxBodySize: number = 0;
 
   #readBody: boolean = true;
@@ -41,12 +43,7 @@ export class NetworkInstrument extends BaseInstrument {
     super('network', store, disabled);
     this.#maxBodySize = maxBodySize;
     this.#readBody = readBody;
-    if (interceptors.includes('fetch')) {
-      this.interceptFetch();
-    }
-    if (interceptors.includes('http')) {
-      this.interceptHttp();
-    }
+    this.#interceptors = interceptors;
   }
 
   async putToStore(time: number, label: string, value: string) {
@@ -75,29 +72,45 @@ export class NetworkInstrument extends BaseInstrument {
   }
 
   activate() {
+    if (this.#interceptors.includes('fetch')) {
+      this.interceptFetch();
+    }
+    if (this.#interceptors.includes('http')) {
+      this.interceptHttp();
+    }
     return super.activate();
   }
 
   deactivate() {
+    if (this.#interceptors.includes('fetch')) {
+      this.restoreFetch();
+    }
+    if (this.#interceptors.includes('http')) {
+      this.restoreHttp();
+    }
     return super.deactivate();
   }
 
-  push(request: NetworkRequest) {
-    if (request.request.body) {
-      request.request.bodySize = request.request.body.length;
-      request.request.body = this.#flattenBody(
-        request.request.body,
-        request.request.headers['content-type']
+  push(
+    value: NetworkRequest,
+    label: string = this.getEntryLabel(value),
+    time = this.getEntryTime(value)
+  ) {
+    if (value.request.body) {
+      value.request.bodySize = value.request.body.length;
+      value.request.body = this.#flattenBody(
+        value.request.body,
+        value.request.headers['content-type']
       );
     }
-    if (request.response.body) {
-      request.response.bodySize = request.response.body.length;
-      request.response.body = this.#flattenBody(
-        request.response.body,
-        request.response.headers['content-type']
+    if (value.response.body) {
+      value.response.bodySize = value.response.body.length;
+      value.response.body = this.#flattenBody(
+        value.response.body,
+        value.response.headers['content-type']
       );
     }
-    return super.push(request);
+    return super.push(value, label, time);
   }
 
   async #readHttpRequestBody(

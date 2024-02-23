@@ -14,8 +14,6 @@ export declare class LogsInstrument extends BaseInstrument {
         trace: string;
         warn: string;
     };
-    console: boolean;
-    stdout: boolean;
     constructor(store: Store, init?: LogsInstrumentInit);
     putToStore(time: number, label: string, value: string): Promise<void>;
     queryFromStore(query: Query): Promise<import("@exotjs/measurements/types").StoreQueryResult>;

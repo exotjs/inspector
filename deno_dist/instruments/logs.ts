@@ -23,15 +23,12 @@ export class LogsInstrument extends BaseInstrument {
 
   #als = new AsyncLocalStorage<boolean>();
 
-  console: boolean = true;
-
-  stdout: boolean = true;
+  #interceptors: Array<'console' | 'stdout'> = [];
 
   constructor(store: Store, init: LogsInstrumentInit = {}) {
-    const { console: interceptConsole = true, disabled = false, stdout: interceptStdout = true } = init;
+    const { interceptors = ['console', 'stdout'], disabled = false } = init;
     super('logs', store, disabled);
-    this.console = interceptConsole;
-    this.stdout = interceptStdout;
+    this.#interceptors = interceptors;
   }
 
   async putToStore(time: number, label: string, value: string) {
@@ -48,24 +45,33 @@ export class LogsInstrument extends BaseInstrument {
   }
 
   activate() {
-    if (this.stdout) {
+    if (this.#interceptors.includes('stdout')) {
       this.interceptStdout();
+    }
+    if (this.#interceptors.includes('console')) {
+      this.interceptConsole();
     }
     return super.activate();
   }
 
   deactivate() {
-    if (this.stdout) {
+    if (this.#interceptors.includes('stdout')) {
       this.restoreStdout();
+    }
+    if (this.#interceptors.includes('console')) {
+      this.restoreConsole();
     }
     return super.deactivate();
   }
 
   interceptConsole() {
     for (const method in LogsInstrument.CONSOLE_LEVELS) {
-      const level = LogsInstrument.CONSOLE_LEVELS[method as keyof typeof LogsInstrument.CONSOLE_LEVELS];
+      const level =
+        LogsInstrument.CONSOLE_LEVELS[
+          method as keyof typeof LogsInstrument.CONSOLE_LEVELS
+        ];
       const desc = originalConsoleDescriptors[method];
-      // @ts-expect-error
+      // @ts-expect-error supress key error
       console[method] = (...args: unknown[]) => {
         return this.#als.run(true, () => {
           this.push(utils.format(...args), level);
@@ -88,7 +94,7 @@ export class LogsInstrument extends BaseInstrument {
   restoreConsole() {
     for (const method in LogsInstrument.CONSOLE_LEVELS) {
       const desc = originalConsoleDescriptors[method];
-      // @ts-expect-error
+      // @ts-expect-error supress key error
       console[method] = desc.value;
     }
   }

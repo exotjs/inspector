@@ -11,7 +11,7 @@ export declare class NetworkInstrument extends BaseInstrument {
     get fetch(): (input: RequestInfo | URL, init?: RequestInit | undefined) => Promise<Response>;
     activate(): boolean;
     deactivate(): boolean;
-    push(request: NetworkRequest): Promise<void>;
+    push(value: NetworkRequest, label?: string, time?: number): Promise<void>;
     createFetch(fetchFn?: typeof fetch): (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>;
     interceptFetch(): void;
     interceptHttp(): void;

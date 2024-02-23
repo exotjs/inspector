@@ -11,15 +11,20 @@ export class ErrorsInstrument extends BaseInstrument {
     async queryFromStore(query) {
         return this.store.listQuery(this.name, query.startTime, query.endTime, query.limit);
     }
-    getEntryLabel(value) {
-        return value.server === false ? 'client' : 'server';
-    }
     serializeValue(value) {
         if (value instanceof Error) {
             value = {
                 message: String(value.message),
                 stack: value.stack,
             };
+        }
+        else if (value.error) {
+            if (!value.message) {
+                value.message = value.error.message;
+            }
+            if (!value.stack) {
+                value.stack = value.error.stack;
+            }
         }
         if (value.modules === void 0 && value.stack) {
             value.modules = getModulesFromCallStack(value.stack?.split('\n') || []);
