@@ -7,6 +7,7 @@ import { LogsInstrument } from './instruments/logs.js';
 import { MetricsInstrument } from './instruments/metrics.js';
 import { NetworkInstrument } from './instruments/network.js';
 import { TracesInstrument } from './instruments/traces.js';
+import { MemoryStore } from './store.js';
 import defaultDashboards from './default-dashboards.js';
 import defaultMeasurements from './default-measurements.js';
 import type { Dashboard, InspectorInit, SessionInit } from './types.js';
@@ -21,9 +22,9 @@ export class Inspector {
     return defaultMeasurements;
   }
 
-  env: Record<string, string> = {};
+  readonly env: Record<string, string> = {};
 
-  instruments: {
+  readonly instruments: {
     errors: ErrorsInstrument;
     events: EventsInstrument;
     logs: LogsInstrument;
@@ -32,9 +33,9 @@ export class Inspector {
     traces: TracesInstrument;
   };
 
-  sessions: Set<Session> = new Set();
+  readonly sessions: Set<Session> = new Set();
 
-  store: Store;
+  readonly store: Store;
 
   get info() {
     const cpus = os.cpus();
@@ -54,8 +55,13 @@ export class Inspector {
     };
   }
 
-  constructor(init: InspectorInit) {
-    const { activate = true, env = true, instruments = {}, store } = init;
+  constructor(init: InspectorInit = {}) {
+    const {
+      activate = true,
+      env = true,
+      instruments = {},
+      store = new MemoryStore(),
+    } = init;
     this.store = store;
     this.instruments = {
       errors: new ErrorsInstrument(store, instruments.errors),
@@ -102,6 +108,7 @@ export class Inspector {
     return session;
   }
 
+  /** @deprecated */
   getInstrument(instrument: keyof typeof this.instruments) {
     if (!this.instruments[instrument]) {
       throw new Error(`Unknown instrument "${instrument}".`);

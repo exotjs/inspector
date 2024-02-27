@@ -1,5 +1,11 @@
+import { Inspector } from './inspector.js';
 export function isBun() {
     return !!process.versions.bun;
+}
+export function isInspectorLike(inspector) {
+    return (!!inspector &&
+        (inspector instanceof Inspector ||
+            ('instruments' in inspector && 'createSession' in inspector)));
 }
 export function getFunctionCallStack(ignore = ['getFunctionCallStack']) {
     const obj = {};

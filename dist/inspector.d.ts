@@ -11,8 +11,8 @@ import type { MeasurementConfig, Store } from '@exotjs/measurements/types';
 export declare class Inspector {
     static defaultDashboards(): Dashboard[];
     static defaultMeasurements(): MeasurementConfig[];
-    env: Record<string, string>;
-    instruments: {
+    readonly env: Record<string, string>;
+    readonly instruments: {
         errors: ErrorsInstrument;
         events: EventsInstrument;
         logs: LogsInstrument;
@@ -20,8 +20,8 @@ export declare class Inspector {
         network: NetworkInstrument;
         traces: TracesInstrument;
     };
-    sessions: Set<Session>;
-    store: Store;
+    readonly sessions: Set<Session>;
+    readonly store: Store;
     get info(): {
         apiVersion: string;
         arch: string;
@@ -34,10 +34,11 @@ export declare class Inspector {
         runtimeVersion: string;
         startedAt: number;
     };
-    constructor(init: InspectorInit);
+    constructor(init?: InspectorInit);
     destroy(): void;
     activate(): void;
     deactivate(): void;
     createSession(init?: SessionInit): Session;
+    /** @deprecated */
     getInstrument(instrument: keyof typeof this.instruments): ErrorsInstrument | EventsInstrument | LogsInstrument | MetricsInstrument | NetworkInstrument | TracesInstrument;
 }

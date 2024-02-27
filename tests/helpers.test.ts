@@ -2,11 +2,37 @@ import { describe, expect, it } from 'vitest';
 import {
   getFunctionCallStack,
   getModulesFromCallStack,
+  isInspectorLike,
   validate,
 } from '../lib/helpers.js';
+import { Inspector } from '../lib/inspector.js';
 import { ValidationSchema } from '../lib/types.js';
 
 describe('helpers', () => {
+  describe('isInspectorLike()', () => {
+    it('should return false if undefined', () => {
+      expect(isInspectorLike(void 0)).toEqual(false);
+    });
+
+    it('should return false if null', () => {
+      expect(isInspectorLike(null)).toEqual(false);
+    });
+
+    it('should return false if an object', () => {
+      expect(isInspectorLike({})).toEqual(false);
+    });
+
+    it('should return true if instance', () => {
+      expect(isInspectorLike(new Inspector())).toEqual(true);
+    });
+
+    it('should return true if an instance-compatible object', () => {
+      expect(
+        isInspectorLike({ instruments: {}, createSession: () => {} })
+      ).toEqual(true);
+    });
+  });
+
   describe('validate()', () => {
     it('should throw if the object does not match the schema', () => {
       expect(() =>

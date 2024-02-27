@@ -1,8 +1,17 @@
 import process from "node:process";
 import { ValidationSchema } from './types.ts';
+import { Inspector } from './inspector.ts';
 
 export function isBun() {
   return !!process.versions.bun;
+}
+
+export function isInspectorLike(inspector: any) {
+  return (
+    !!inspector &&
+    (inspector instanceof Inspector ||
+      ('instruments' in inspector && 'createSession' in inspector))
+  );
 }
 
 export function getFunctionCallStack(

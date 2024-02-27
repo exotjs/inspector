@@ -153,7 +153,7 @@ export interface InspectorInit {
   activate?: boolean;
   env?: boolean;
   instruments?: InspectorInitInstruments;
-  store: Store;
+  store?: Store;
 }
 
 export interface ErrorsInstrumentValue {

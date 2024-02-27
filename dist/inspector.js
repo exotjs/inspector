@@ -7,6 +7,7 @@ import { LogsInstrument } from './instruments/logs.js';
 import { MetricsInstrument } from './instruments/metrics.js';
 import { NetworkInstrument } from './instruments/network.js';
 import { TracesInstrument } from './instruments/traces.js';
+import { MemoryStore } from './store.js';
 import defaultDashboards from './default-dashboards.js';
 import defaultMeasurements from './default-measurements.js';
 export class Inspector {
@@ -36,8 +37,8 @@ export class Inspector {
             startedAt: performance.timeOrigin,
         };
     }
-    constructor(init) {
-        const { activate = true, env = true, instruments = {}, store } = init;
+    constructor(init = {}) {
+        const { activate = true, env = true, instruments = {}, store = new MemoryStore(), } = init;
         this.store = store;
         this.instruments = {
             errors: new ErrorsInstrument(store, instruments.errors),
@@ -79,6 +80,7 @@ export class Inspector {
         });
         return session;
     }
+    /** @deprecated */
     getInstrument(instrument) {
         if (!this.instruments[instrument]) {
             throw new Error(`Unknown instrument "${instrument}".`);
