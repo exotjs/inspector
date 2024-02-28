@@ -1,6 +1,6 @@
 {
   "name": "@exotjs/inspector",
-  "version": "0.1.15",
+  "version": "0.1.16",
   "description": "Exot Inspector - monitoring, tracing and debugging for Node.js, Bun and Deno.",
   "author": "Daniel Regeci",
   "license": "MIT",
@@ -67,7 +67,7 @@
   },
   "dependencies": {
     "@exotjs/measurements": "0.1.5",
-    "@exotjs/trace": "0.1.4"
+    "@exotjs/trace": "0.1.6"
   },
   "devDependencies": {
     "@types/node": "^20.9.0",

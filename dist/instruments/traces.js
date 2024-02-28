@@ -27,6 +27,14 @@ export class TracesInstrument extends BaseInstrument {
     get trace() {
         return this.tracer.trace;
     }
+    activate() {
+        this.tracer.active = super.activate();
+        return this.active;
+    }
+    deactivate() {
+        this.tracer.active = super.deactivate();
+        return this.active;
+    }
     async putToStore(time, label, value) {
         return this.store.listAdd(this.name, time, label, value);
     }

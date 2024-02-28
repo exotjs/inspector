@@ -38,6 +38,16 @@ export class TracesInstrument extends BaseInstrument {
     return this.tracer.trace;
   }
 
+  activate(): boolean {
+    this.tracer.active = super.activate();
+    return this.active;
+  }
+
+  deactivate(): boolean {
+    this.tracer.active = super.deactivate();
+    return this.active;
+  }
+
   async putToStore(time: number, label: string, value: string) {
     return this.store.listAdd(this.name, time, label, value);
   }

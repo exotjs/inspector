@@ -1,8 +1,8 @@
 import { BaseInstrument } from './base.ts';
-import { Tracer } from 'npm:@exotjs/trace@0.1.4';
+import { Tracer } from 'npm:@exotjs/trace@0.1.6';
 import type { BaseInstrumentInit, Query } from '../types.ts';
 import type { Store } from 'npm:@exotjs/measurements@0.1.5/types';
-import { TraceSpan } from 'npm:@exotjs/trace@0.1.4/types';
+import { TraceSpan } from 'npm:@exotjs/trace@0.1.6/types';
 
 export class TracesInstrument extends BaseInstrument {
   readonly tracer: Tracer;
@@ -36,6 +36,16 @@ export class TracesInstrument extends BaseInstrument {
 
   get trace() {
     return this.tracer.trace;
+  }
+
+  activate(): boolean {
+    this.tracer.active = super.activate();
+    return this.active;
+  }
+
+  deactivate(): boolean {
+    this.tracer.active = super.deactivate();
+    return this.active;
   }
 
   async putToStore(time: number, label: string, value: string) {
